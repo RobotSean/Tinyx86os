@@ -1,0 +1,14 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/xdu/cpp/Tinyx86os/source/boot/boot.h
+
+/home/xdu/cpp/Tinyx86os/source/boot/start.S
+boot.h
+/home/xdu/cpp/Tinyx86os/source/boot/boot.h
+

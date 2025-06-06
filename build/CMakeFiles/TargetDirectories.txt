@@ -1,0 +1,5 @@
+/home/xdu/cpp/Tinyx86os/build/CMakeFiles/edit_cache.dir
+/home/xdu/cpp/Tinyx86os/build/CMakeFiles/rebuild_cache.dir
+/home/xdu/cpp/Tinyx86os/build/source/boot/CMakeFiles/boot.dir
+/home/xdu/cpp/Tinyx86os/build/source/boot/CMakeFiles/edit_cache.dir
+/home/xdu/cpp/Tinyx86os/build/source/boot/CMakeFiles/rebuild_cache.dir
