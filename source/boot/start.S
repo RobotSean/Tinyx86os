@@ -18,10 +18,10 @@ _start:
 	// 使用0x7c00之前的空间作栈，大约有30KB的RAM，足够boot和loader使用
 	mov $_start, %esp
 
-	//  使用BIOS中断显示字符,显示boot加载完成提示
-	mov $0xe, %ah
-	mov $'L', %al
-	int $0x10
+	; //  使用BIOS中断显示字符,显示boot加载完成提示
+	; mov $0xe, %ah
+	; mov $'L', %al
+	; int $0x10
 
 	// 使用BIOS中断读取磁盘，加载loader代码到内存的0x8000
 read_loader:

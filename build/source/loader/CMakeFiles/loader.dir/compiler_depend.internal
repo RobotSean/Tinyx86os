@@ -3,9 +3,19 @@
 
 source/loader/CMakeFiles/loader.dir/loader_16.c.obj
  /home/xdu/cpp/Tinyx86os/source/loader/loader_16.c
+ /home/xdu/cpp/Tinyx86os/source/comm/boot_info.h
+ /home/xdu/cpp/Tinyx86os/source/comm/cpu_instr.h
+ /home/xdu/cpp/Tinyx86os/source/comm/elf.h
+ /home/xdu/cpp/Tinyx86os/source/comm/types.h
+ /home/xdu/cpp/Tinyx86os/source/loader/loader.h
  /usr/include/stdc-predef.h
 
 source/loader/CMakeFiles/loader.dir/loader_32.c.obj
  /home/xdu/cpp/Tinyx86os/source/loader/loader_32.c
+ /home/xdu/cpp/Tinyx86os/source/comm/boot_info.h
+ /home/xdu/cpp/Tinyx86os/source/comm/cpu_instr.h
+ /home/xdu/cpp/Tinyx86os/source/comm/elf.h
+ /home/xdu/cpp/Tinyx86os/source/comm/types.h
+ /home/xdu/cpp/Tinyx86os/source/loader/loader.h
  /usr/include/stdc-predef.h
 

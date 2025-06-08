@@ -475,6 +475,9 @@
 		},
 		{
 			"path" : "source/loader/CMakeLists.txt"
+		},
+		{
+			"path" : "source/kernel/CMakeLists.txt"
 		}
 	],
 	"kind" : "cmakeFiles",

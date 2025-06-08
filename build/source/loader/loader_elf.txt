@@ -10,29 +10,33 @@ ELF 头：
   版本:                              0x1
   入口点地址：               0x8000
   程序头起点：          52 (bytes into file)
-  Start of section headers:          5444 (bytes into file)
+  Start of section headers:          15604 (bytes into file)
   标志：             0x0
   Size of this header:               52 (bytes)
   Size of program headers:           32 (bytes)
-  Number of program headers:         3
+  Number of program headers:         5
   Size of section headers:           40 (bytes)
-  Number of section headers:         12
-  Section header string table index: 11
+  Number of section headers:         16
+  Section header string table index: 15
 
 节头：
   [Nr] Name              Type            Addr     Off    Size   ES Flg Lk Inf Al
   [ 0]                   NULL            00000000 000000 000000 00      0   0  0
-  [ 1] .text             PROGBITS        00008000 001000 00000e 00  AX  0   0  1
-  [ 2] .comment          PROGBITS        00000000 00100e 00002b 01  MS  0   0  1
-  [ 3] .debug_aranges    PROGBITS        00000000 001040 000040 00      0   0  8
-  [ 4] .debug_info       PROGBITS        00000000 001080 00005e 00      0   0  1
-  [ 5] .debug_abbrev     PROGBITS        00000000 0010de 000042 00      0   0  1
-  [ 6] .debug_line       PROGBITS        00000000 001120 0000c5 00      0   0  1
-  [ 7] .debug_frame      PROGBITS        00000000 0011e8 00002c 00      0   0  4
-  [ 8] .debug_str        PROGBITS        00000000 001214 000176 01  MS  0   0  1
-  [ 9] .symtab           SYMTAB          00000000 00138c 000100 10     10  11  4
-  [10] .strtab           STRTAB          00000000 00148c 00003e 00      0   0  1
-  [11] .shstrtab         STRTAB          00000000 0014ca 000077 00      0   0  1
+  [ 1] .text             PROGBITS        00008000 001000 000650 00  AX  0   0  1
+  [ 2] .rodata           PROGBITS        00009000 002000 000039 00   A  0   0  1
+  [ 3] .data             PROGBITS        0000a03c 00203c 000018 00  WA  0   0  4
+  [ 4] .bss              NOBITS          0000a060 002054 000054 00  WA  0   0 32
+  [ 5] .comment          PROGBITS        00000000 002054 00002b 01  MS  0   0  1
+  [ 6] .debug_aranges    PROGBITS        00000000 002080 000060 00      0   0  8
+  [ 7] .debug_info       PROGBITS        00000000 0020e0 0008e0 00      0   0  1
+  [ 8] .debug_abbrev     PROGBITS        00000000 0029c0 000385 00      0   0  1
+  [ 9] .debug_line       PROGBITS        00000000 002d45 0004c5 00      0   0  1
+  [10] .debug_frame      PROGBITS        00000000 00320c 000270 00      0   0  4
+  [11] .debug_str        PROGBITS        00000000 00347c 00045c 01  MS  0   0  1
+  [12] .debug_ranges     PROGBITS        00000000 0038d8 000018 00      0   0  1
+  [13] .symtab           SYMTAB          00000000 0038f0 000280 10     14  31  4
+  [14] .strtab           STRTAB          00000000 003b70 0000eb 00      0   0  1
+  [15] .shstrtab         STRTAB          00000000 003c5b 000098 00      0   0  1
 Key to Flags:
   W (write), A (alloc), X (execute), M (merge), S (strings), I (info),
   L (link order), O (extra OS processing required), G (group), T (TLS),
@@ -43,15 +47,19 @@ There are no section groups in this file.
 
 程序头：
   Type           Offset   VirtAddr   PhysAddr   FileSiz MemSiz  Flg Align
-  LOAD           0x000000 0x00007000 0x00007000 0x00094 0x00094 R   0x1000
-  LOAD           0x001000 0x00008000 0x00008000 0x0000e 0x0000e R E 0x1000
+  LOAD           0x000000 0x00007000 0x00007000 0x000d4 0x000d4 R   0x1000
+  LOAD           0x001000 0x00008000 0x00008000 0x00650 0x00650 R E 0x1000
+  LOAD           0x002000 0x00009000 0x00009000 0x00039 0x00039 R   0x1000
+  LOAD           0x00203c 0x0000a03c 0x0000a03c 0x00018 0x00078 RW  0x1000
   GNU_STACK      0x000000 0x00000000 0x00000000 0x00000 0x00000 RWE 0x10
 
  Section to Segment mapping:
   段节...
    00     
    01     .text 
-   02     
+   02     .rodata 
+   03     .data .bss 
+   04     
 
 There is no dynamic section in this file.
 
@@ -59,23 +67,47 @@ There is no dynamic section in this file.
 
 The decoding of unwind sections for machine type Intel 80386 is not currently supported.
 
-Symbol table '.symtab' contains 16 entries:
+Symbol table '.symtab' contains 40 entries:
    Num:    Value  Size Type    Bind   Vis      Ndx Name
      0: 00000000     0 NOTYPE  LOCAL  DEFAULT  UND 
      1: 00008000     0 SECTION LOCAL  DEFAULT    1 
-     2: 00000000     0 SECTION LOCAL  DEFAULT    2 
-     3: 00000000     0 SECTION LOCAL  DEFAULT    3 
-     4: 00000000     0 SECTION LOCAL  DEFAULT    4 
+     2: 00009000     0 SECTION LOCAL  DEFAULT    2 
+     3: 0000a03c     0 SECTION LOCAL  DEFAULT    3 
+     4: 0000a060     0 SECTION LOCAL  DEFAULT    4 
      5: 00000000     0 SECTION LOCAL  DEFAULT    5 
      6: 00000000     0 SECTION LOCAL  DEFAULT    6 
      7: 00000000     0 SECTION LOCAL  DEFAULT    7 
      8: 00000000     0 SECTION LOCAL  DEFAULT    8 
-     9: 00000000     0 FILE    LOCAL  DEFAULT  ABS loader_16.c
-    10: 00000000     0 FILE    LOCAL  DEFAULT  ABS loader_32.c
-    11: 00008003    11 FUNC    GLOBAL DEFAULT    1 loader_entry
-    12: 00008000     0 NOTYPE  GLOBAL DEFAULT    1 _start
-    13: 00009000     0 NOTYPE  GLOBAL DEFAULT    1 __bss_start
-    14: 00009000     0 NOTYPE  GLOBAL DEFAULT    1 _edata
-    15: 00009000     0 NOTYPE  GLOBAL DEFAULT    1 _end
+     9: 00000000     0 SECTION LOCAL  DEFAULT    9 
+    10: 00000000     0 SECTION LOCAL  DEFAULT   10 
+    11: 00000000     0 SECTION LOCAL  DEFAULT   11 
+    12: 00000000     0 SECTION LOCAL  DEFAULT   12 
+    13: 00000000     0 FILE    LOCAL  DEFAULT  ABS loader_16.c
+    14: 00008018    42 FUNC    LOCAL  DEFAULT    1 inb
+    15: 00008042    48 FUNC    LOCAL  DEFAULT    1 outb
+    16: 00008072    11 FUNC    LOCAL  DEFAULT    1 cli
+    17: 0000807d    54 FUNC    LOCAL  DEFAULT    1 lgdt
+    18: 000080b3    26 FUNC    LOCAL  DEFAULT    1 read_cr0
+    19: 000080cd    18 FUNC    LOCAL  DEFAULT    1 write_cr0
+    20: 000080df    43 FUNC    LOCAL  DEFAULT    1 far_jump
+    21: 0000810a    64 FUNC    LOCAL  DEFAULT    1 show_msg
+    22: 0000814a   317 FUNC    LOCAL  DEFAULT    1 detect_memory
+    23: 00008287   150 FUNC    LOCAL  DEFAULT    1 enter_protect_mode
+    24: 00000000     0 FILE    LOCAL  DEFAULT  ABS loader_32.c
+    25: 00008347    29 FUNC    LOCAL  DEFAULT    1 inb
+    26: 00008364    31 FUNC    LOCAL  DEFAULT    1 inw
+    27: 00008383    33 FUNC    LOCAL  DEFAULT    1 outb
+    28: 000083a4   308 FUNC    LOCAL  DEFAULT    1 read_disk
+    29: 000084d8     9 FUNC    LOCAL  DEFAULT    1 die
+    30: 000084e1   286 FUNC    LOCAL  DEFAULT    1 reload_elf_file
+    31: 0000831d    42 FUNC    GLOBAL DEFAULT    1 loader_entry
+    32: 0000a03c    24 OBJECT  GLOBAL DEFAULT    3 gdt_table
+    33: 000085ff    81 FUNC    GLOBAL DEFAULT    1 load_kernel
+    34: 0000a060    84 OBJECT  GLOBAL DEFAULT    4 boot_info
+    35: 00008000     0 NOTYPE  GLOBAL DEFAULT    1 _start
+    36: 0000a054     0 NOTYPE  GLOBAL DEFAULT    4 __bss_start
+    37: 00008003     0 NOTYPE  GLOBAL DEFAULT    1 protect_mode_entry
+    38: 0000a054     0 NOTYPE  GLOBAL DEFAULT    3 _edata
+    39: 0000a0b4     0 NOTYPE  GLOBAL DEFAULT    4 _end
 
 No version information found in this file.

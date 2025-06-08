@@ -83,12 +83,12 @@ _start:
 	mov $_start, %esp
     7c0d:	66 bc 00 7c 00 00    	mov    $0x7c00,%esp
 
-	//  使用BIOS中断显示字符,显示boot加载完成提示
-	mov $0xe, %ah
+	; //  使用BIOS中断显示字符,显示boot加载完成提示
+	; mov $0xe, %ah
     7c13:	b4 0e                	mov    $0xe,%ah
-	mov $'L', %al
+	; mov $'L', %al
     7c15:	b0 4c                	mov    $0x4c,%al
-	int $0x10
+	; int $0x10
     7c17:	cd 10                	int    $0x10
 
 00007c19 <read_loader>:

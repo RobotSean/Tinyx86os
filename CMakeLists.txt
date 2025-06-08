@@ -6,6 +6,7 @@ set(CMAKE_VERBOSE_MAKEFILE on)   # 开启输出编译详细过程的提示
 set(TOOL_PREFIX  "x86_64-linux-gnu-")
 set(CMAKE_SYSTEM_NAME "Generic")
 set(CMAKE_SYSTEM_VERSION "0.0.0")
+set(CMAKE_BUILD_TYPE "Debug")
 
 # C编译器与参数配置
 set(CMAKE_C_COMPILER "${TOOL_PREFIX}gcc")
@@ -38,7 +39,7 @@ include_directories(
 # 底层的若干子项目：含内核及应用程序
 add_subdirectory(./source/boot)
 add_subdirectory(./source/loader)
-# add_subdirectory(./source/kernel)
+add_subdirectory(./source/kernel)
 # add_subdirectory(./source/applib)
 # add_subdirectory(./source/shell)
 # add_subdirectory(./source/init)

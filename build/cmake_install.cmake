@@ -41,6 +41,7 @@ if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for each subdirectory.
   include("/home/xdu/cpp/Tinyx86os/build/source/boot/cmake_install.cmake")
   include("/home/xdu/cpp/Tinyx86os/build/source/loader/cmake_install.cmake")
+  include("/home/xdu/cpp/Tinyx86os/build/source/kernel/cmake_install.cmake")
 
 endif()
 
