@@ -6,5 +6,9 @@
 
 #IncludeRegexTransform: 
 
+/home/xdu/cpp/Tinyx86os/source/kernel/include/os_cfg.h
+
 /home/xdu/cpp/Tinyx86os/source/kernel/init/start.S
+os_cfg.h
+/home/xdu/cpp/Tinyx86os/source/kernel/init/os_cfg.h
 

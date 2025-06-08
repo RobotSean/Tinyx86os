@@ -40,21 +40,21 @@ events:
     checks:
       - "Detecting C compiler ABI info"
     directories:
-      source: "/home/xdu/cpp/Tinyx86os/build/CMakeFiles/CMakeScratch/TryCompile-53Bt8e"
-      binary: "/home/xdu/cpp/Tinyx86os/build/CMakeFiles/CMakeScratch/TryCompile-53Bt8e"
+      source: "/home/xdu/cpp/Tinyx86os/build/CMakeFiles/CMakeScratch/TryCompile-aWz6rJ"
+      binary: "/home/xdu/cpp/Tinyx86os/build/CMakeFiles/CMakeScratch/TryCompile-aWz6rJ"
     cmakeVariables:
       CMAKE_C_FLAGS: "-g -c -O0 -m32 -fno-pie -fno-stack-protector -fno-asynchronous-unwind-tables"
     buildResult:
       variable: "CMAKE_C_ABI_COMPILED"
       cached: true
       stdout: |
-        Change Dir: '/home/xdu/cpp/Tinyx86os/build/CMakeFiles/CMakeScratch/TryCompile-53Bt8e'
+        Change Dir: '/home/xdu/cpp/Tinyx86os/build/CMakeFiles/CMakeScratch/TryCompile-aWz6rJ'
         
-        Run Build Command(s): /usr/local/bin/cmake -E env VERBOSE=1 /usr/bin/make -f Makefile cmTC_5038d/fast
-        /usr/bin/make  -f CMakeFiles/cmTC_5038d.dir/build.make CMakeFiles/cmTC_5038d.dir/build
-        make[1]: Entering directory '/home/xdu/cpp/Tinyx86os/build/CMakeFiles/CMakeScratch/TryCompile-53Bt8e'
-        Building C object CMakeFiles/cmTC_5038d.dir/CMakeCCompilerABI.c.obj
-        /usr/bin/x86_64-linux-gnu-gcc   -g -c -O0 -m32 -fno-pie -fno-stack-protector -fno-asynchronous-unwind-tables    -v -o CMakeFiles/cmTC_5038d.dir/CMakeCCompilerABI.c.obj -c /usr/local/share/cmake-3.30/Modules/CMakeCCompilerABI.c
+        Run Build Command(s): /usr/local/bin/cmake -E env VERBOSE=1 /usr/bin/make -f Makefile cmTC_7ddcc/fast
+        /usr/bin/make  -f CMakeFiles/cmTC_7ddcc.dir/build.make CMakeFiles/cmTC_7ddcc.dir/build
+        make[1]: Entering directory '/home/xdu/cpp/Tinyx86os/build/CMakeFiles/CMakeScratch/TryCompile-aWz6rJ'
+        Building C object CMakeFiles/cmTC_7ddcc.dir/CMakeCCompilerABI.c.obj
+        /usr/bin/x86_64-linux-gnu-gcc   -g -c -O0 -m32 -fno-pie -fno-stack-protector -fno-asynchronous-unwind-tables    -v -o CMakeFiles/cmTC_7ddcc.dir/CMakeCCompilerABI.c.obj -c /usr/local/share/cmake-3.30/Modules/CMakeCCompilerABI.c
         Using built-in specs.
         COLLECT_GCC=/usr/bin/x86_64-linux-gnu-gcc
         OFFLOAD_TARGET_NAMES=nvptx-none:hsa
@@ -63,8 +63,8 @@ events:
         Configured with: ../src/configure -v --with-pkgversion='Ubuntu 9.4.0-1ubuntu1~20.04.2' --with-bugurl=file:///usr/share/doc/gcc-9/README.Bugs --enable-languages=c,ada,c++,go,brig,d,fortran,objc,obj-c++,gm2 --prefix=/usr --with-gcc-major-version-only --program-suffix=-9 --program-prefix=x86_64-linux-gnu- --enable-shared --enable-linker-build-id --libexecdir=/usr/lib --without-included-gettext --enable-threads=posix --libdir=/usr/lib --enable-nls --enable-clocale=gnu --enable-libstdcxx-debug --enable-libstdcxx-time=yes --with-default-libstdcxx-abi=new --enable-gnu-unique-object --disable-vtable-verify --enable-plugin --enable-default-pie --with-system-zlib --with-target-system-zlib=auto --enable-objc-gc=auto --enable-multiarch --disable-werror --with-arch-32=i686 --with-abi=m64 --with-multilib-list=m32,m64,mx32 --enable-multilib --with-tune=generic --enable-offload-targets=nvptx-none=/build/gcc-9-9QDOt0/gcc-9-9.4.0/debian/tmp-nvptx/usr,hsa --without-cuda-driver --enable-checking=release --build=x86_64-linux-gnu --host=x86_64-linux-gnu --target=x86_64-linux-gnu
         Thread model: posix
         gcc version 9.4.0 (Ubuntu 9.4.0-1ubuntu1~20.04.2) 
-        COLLECT_GCC_OPTIONS='-g' '-c' '-O0' '-m32' '-fno-pie' '-fno-stack-protector' '-fno-asynchronous-unwind-tables' '-v' '-o' 'CMakeFiles/cmTC_5038d.dir/CMakeCCompilerABI.c.obj' '-c' '-mtune=generic' '-march=i686'
-         /usr/lib/gcc/x86_64-linux-gnu/9/cc1 -quiet -v -imultilib 32 -imultiarch i386-linux-gnu /usr/local/share/cmake-3.30/Modules/CMakeCCompilerABI.c -quiet -dumpbase CMakeCCompilerABI.c -m32 -mtune=generic -march=i686 -auxbase-strip CMakeFiles/cmTC_5038d.dir/CMakeCCompilerABI.c.obj -g -O0 -version -fno-pie -fno-stack-protector -fno-asynchronous-unwind-tables -Wformat -Wformat-security -fstack-clash-protection -fcf-protection -o /tmp/cczD5bv7.s
+        COLLECT_GCC_OPTIONS='-g' '-c' '-O0' '-m32' '-fno-pie' '-fno-stack-protector' '-fno-asynchronous-unwind-tables' '-v' '-o' 'CMakeFiles/cmTC_7ddcc.dir/CMakeCCompilerABI.c.obj' '-c' '-mtune=generic' '-march=i686'
+         /usr/lib/gcc/x86_64-linux-gnu/9/cc1 -quiet -v -imultilib 32 -imultiarch i386-linux-gnu /usr/local/share/cmake-3.30/Modules/CMakeCCompilerABI.c -quiet -dumpbase CMakeCCompilerABI.c -m32 -mtune=generic -march=i686 -auxbase-strip CMakeFiles/cmTC_7ddcc.dir/CMakeCCompilerABI.c.obj -g -O0 -version -fno-pie -fno-stack-protector -fno-asynchronous-unwind-tables -Wformat -Wformat-security -fstack-clash-protection -fcf-protection -o /tmp/ccFiMIoC.s
         GNU C17 (Ubuntu 9.4.0-1ubuntu1~20.04.2) version 9.4.0 (x86_64-linux-gnu)
         	compiled by GNU C version 9.4.0, GMP version 6.2.0, MPFR version 4.0.2, MPC version 1.1.0, isl version isl-0.22.1-GMP
         
@@ -84,15 +84,15 @@ events:
         
         GGC heuristics: --param ggc-min-expand=100 --param ggc-min-heapsize=131072
         Compiler executable checksum: 01da938ff5dc2163489aa33cb3b747a7
-        COLLECT_GCC_OPTIONS='-g' '-c' '-O0' '-m32' '-fno-pie' '-fno-stack-protector' '-fno-asynchronous-unwind-tables' '-v' '-o' 'CMakeFiles/cmTC_5038d.dir/CMakeCCompilerABI.c.obj' '-c' '-mtune=generic' '-march=i686'
-         as -v --32 -o CMakeFiles/cmTC_5038d.dir/CMakeCCompilerABI.c.obj /tmp/cczD5bv7.s
+        COLLECT_GCC_OPTIONS='-g' '-c' '-O0' '-m32' '-fno-pie' '-fno-stack-protector' '-fno-asynchronous-unwind-tables' '-v' '-o' 'CMakeFiles/cmTC_7ddcc.dir/CMakeCCompilerABI.c.obj' '-c' '-mtune=generic' '-march=i686'
+         as -v --32 -o CMakeFiles/cmTC_7ddcc.dir/CMakeCCompilerABI.c.obj /tmp/ccFiMIoC.s
         GNU assembler version 2.34 (x86_64-linux-gnu) using BFD version (GNU Binutils for Ubuntu) 2.34
         COMPILER_PATH=/usr/lib/gcc/x86_64-linux-gnu/9/:/usr/lib/gcc/x86_64-linux-gnu/9/:/usr/lib/gcc/x86_64-linux-gnu/:/usr/lib/gcc/x86_64-linux-gnu/9/:/usr/lib/gcc/x86_64-linux-gnu/
         LIBRARY_PATH=/usr/lib/gcc/x86_64-linux-gnu/9/../../../i386-linux-gnu/:/usr/lib/gcc/x86_64-linux-gnu/9/../../../../lib32/:/lib/i386-linux-gnu/:/lib/../lib32/:/usr/lib/i386-linux-gnu/:/usr/lib/../lib32/:/usr/lib/gcc/x86_64-linux-gnu/9/:/usr/lib/gcc/x86_64-linux-gnu/9/../../../i386-linux-gnu/:/usr/lib/gcc/x86_64-linux-gnu/9/../../../:/lib/i386-linux-gnu/:/lib/:/usr/lib/i386-linux-gnu/:/usr/lib/
-        COLLECT_GCC_OPTIONS='-g' '-c' '-O0' '-m32' '-fno-pie' '-fno-stack-protector' '-fno-asynchronous-unwind-tables' '-v' '-o' 'CMakeFiles/cmTC_5038d.dir/CMakeCCompilerABI.c.obj' '-c' '-mtune=generic' '-march=i686'
-        Linking C executable cmTC_5038d
-        /usr/local/bin/cmake -E cmake_link_script CMakeFiles/cmTC_5038d.dir/link.txt --verbose=1
-        /usr/bin/x86_64-linux-gnu-gcc -g -c -O0 -m32 -fno-pie -fno-stack-protector -fno-asynchronous-unwind-tables   -v CMakeFiles/cmTC_5038d.dir/CMakeCCompilerABI.c.obj -o cmTC_5038d
+        COLLECT_GCC_OPTIONS='-g' '-c' '-O0' '-m32' '-fno-pie' '-fno-stack-protector' '-fno-asynchronous-unwind-tables' '-v' '-o' 'CMakeFiles/cmTC_7ddcc.dir/CMakeCCompilerABI.c.obj' '-c' '-mtune=generic' '-march=i686'
+        Linking C executable cmTC_7ddcc
+        /usr/local/bin/cmake -E cmake_link_script CMakeFiles/cmTC_7ddcc.dir/link.txt --verbose=1
+        /usr/bin/x86_64-linux-gnu-gcc -g -c -O0 -m32 -fno-pie -fno-stack-protector -fno-asynchronous-unwind-tables   -v CMakeFiles/cmTC_7ddcc.dir/CMakeCCompilerABI.c.obj -o cmTC_7ddcc
         Using built-in specs.
         COLLECT_GCC=/usr/bin/x86_64-linux-gnu-gcc
         OFFLOAD_TARGET_NAMES=nvptx-none:hsa
@@ -103,9 +103,9 @@ events:
         gcc version 9.4.0 (Ubuntu 9.4.0-1ubuntu1~20.04.2) 
         COMPILER_PATH=/usr/lib/gcc/x86_64-linux-gnu/9/:/usr/lib/gcc/x86_64-linux-gnu/9/:/usr/lib/gcc/x86_64-linux-gnu/:/usr/lib/gcc/x86_64-linux-gnu/9/:/usr/lib/gcc/x86_64-linux-gnu/
         LIBRARY_PATH=/usr/lib/gcc/x86_64-linux-gnu/9/../../../i386-linux-gnu/:/usr/lib/gcc/x86_64-linux-gnu/9/../../../../lib32/:/lib/i386-linux-gnu/:/lib/../lib32/:/usr/lib/i386-linux-gnu/:/usr/lib/../lib32/:/usr/lib/gcc/x86_64-linux-gnu/9/:/usr/lib/gcc/x86_64-linux-gnu/9/../../../i386-linux-gnu/:/usr/lib/gcc/x86_64-linux-gnu/9/../../../:/lib/i386-linux-gnu/:/lib/:/usr/lib/i386-linux-gnu/:/usr/lib/
-        COLLECT_GCC_OPTIONS='-g' '-c' '-O0' '-m32' '-fno-pie' '-fno-stack-protector' '-fno-asynchronous-unwind-tables' '-v' '-o' 'cmTC_5038d' '-mtune=generic' '-march=i686'
-        x86_64-linux-gnu-gcc: warning: CMakeFiles/cmTC_5038d.dir/CMakeCCompilerABI.c.obj: linker input file unused because linking not done
-        make[1]: Leaving directory '/home/xdu/cpp/Tinyx86os/build/CMakeFiles/CMakeScratch/TryCompile-53Bt8e'
+        COLLECT_GCC_OPTIONS='-g' '-c' '-O0' '-m32' '-fno-pie' '-fno-stack-protector' '-fno-asynchronous-unwind-tables' '-v' '-o' 'cmTC_7ddcc' '-mtune=generic' '-march=i686'
+        x86_64-linux-gnu-gcc: warning: CMakeFiles/cmTC_7ddcc.dir/CMakeCCompilerABI.c.obj: linker input file unused because linking not done
+        make[1]: Leaving directory '/home/xdu/cpp/Tinyx86os/build/CMakeFiles/CMakeScratch/TryCompile-aWz6rJ'
         
       exitCode: 0
   -
@@ -116,26 +116,26 @@ events:
     checks:
       - "Check for working C compiler: /usr/bin/x86_64-linux-gnu-gcc"
     directories:
-      source: "/home/xdu/cpp/Tinyx86os/build/CMakeFiles/CMakeScratch/TryCompile-e4lxkc"
-      binary: "/home/xdu/cpp/Tinyx86os/build/CMakeFiles/CMakeScratch/TryCompile-e4lxkc"
+      source: "/home/xdu/cpp/Tinyx86os/build/CMakeFiles/CMakeScratch/TryCompile-aUudmK"
+      binary: "/home/xdu/cpp/Tinyx86os/build/CMakeFiles/CMakeScratch/TryCompile-aUudmK"
     cmakeVariables:
       CMAKE_C_FLAGS: "-g -c -O0 -m32 -fno-pie -fno-stack-protector -fno-asynchronous-unwind-tables"
     buildResult:
       variable: "CMAKE_C_COMPILER_WORKS"
       cached: true
       stdout: |
-        Change Dir: '/home/xdu/cpp/Tinyx86os/build/CMakeFiles/CMakeScratch/TryCompile-e4lxkc'
+        Change Dir: '/home/xdu/cpp/Tinyx86os/build/CMakeFiles/CMakeScratch/TryCompile-aUudmK'
         
-        Run Build Command(s): /usr/local/bin/cmake -E env VERBOSE=1 /usr/bin/make -f Makefile cmTC_36100/fast
-        /usr/bin/make  -f CMakeFiles/cmTC_36100.dir/build.make CMakeFiles/cmTC_36100.dir/build
-        make[1]: 进入目录“/home/xdu/cpp/Tinyx86os/build/CMakeFiles/CMakeScratch/TryCompile-e4lxkc”
-        Building C object CMakeFiles/cmTC_36100.dir/testCCompiler.c.obj
-        /usr/bin/x86_64-linux-gnu-gcc   -g -c -O0 -m32 -fno-pie -fno-stack-protector -fno-asynchronous-unwind-tables  -o CMakeFiles/cmTC_36100.dir/testCCompiler.c.obj -c /home/xdu/cpp/Tinyx86os/build/CMakeFiles/CMakeScratch/TryCompile-e4lxkc/testCCompiler.c
-        Linking C executable cmTC_36100
-        /usr/local/bin/cmake -E cmake_link_script CMakeFiles/cmTC_36100.dir/link.txt --verbose=1
-        /usr/bin/x86_64-linux-gnu-gcc -g -c -O0 -m32 -fno-pie -fno-stack-protector -fno-asynchronous-unwind-tables  CMakeFiles/cmTC_36100.dir/testCCompiler.c.obj -o cmTC_36100
-        x86_64-linux-gnu-gcc: warning: CMakeFiles/cmTC_36100.dir/testCCompiler.c.obj: linker input file unused because linking not done
-        make[1]: 离开目录“/home/xdu/cpp/Tinyx86os/build/CMakeFiles/CMakeScratch/TryCompile-e4lxkc”
+        Run Build Command(s): /usr/local/bin/cmake -E env VERBOSE=1 /usr/bin/make -f Makefile cmTC_b54f9/fast
+        /usr/bin/make  -f CMakeFiles/cmTC_b54f9.dir/build.make CMakeFiles/cmTC_b54f9.dir/build
+        make[1]: 进入目录“/home/xdu/cpp/Tinyx86os/build/CMakeFiles/CMakeScratch/TryCompile-aUudmK”
+        Building C object CMakeFiles/cmTC_b54f9.dir/testCCompiler.c.obj
+        /usr/bin/x86_64-linux-gnu-gcc   -g -c -O0 -m32 -fno-pie -fno-stack-protector -fno-asynchronous-unwind-tables  -o CMakeFiles/cmTC_b54f9.dir/testCCompiler.c.obj -c /home/xdu/cpp/Tinyx86os/build/CMakeFiles/CMakeScratch/TryCompile-aUudmK/testCCompiler.c
+        Linking C executable cmTC_b54f9
+        /usr/local/bin/cmake -E cmake_link_script CMakeFiles/cmTC_b54f9.dir/link.txt --verbose=1
+        /usr/bin/x86_64-linux-gnu-gcc -g -c -O0 -m32 -fno-pie -fno-stack-protector -fno-asynchronous-unwind-tables  CMakeFiles/cmTC_b54f9.dir/testCCompiler.c.obj -o cmTC_b54f9
+        x86_64-linux-gnu-gcc: warning: CMakeFiles/cmTC_b54f9.dir/testCCompiler.c.obj: linker input file unused because linking not done
+        make[1]: 离开目录“/home/xdu/cpp/Tinyx86os/build/CMakeFiles/CMakeScratch/TryCompile-aUudmK”
         
       exitCode: 0
   -

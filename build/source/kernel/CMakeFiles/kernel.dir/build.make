@@ -82,10 +82,24 @@ source/kernel/CMakeFiles/kernel.dir/init/start.S.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling ASM source to assembly CMakeFiles/kernel.dir/init/start.S.s"
 	cd /home/xdu/cpp/Tinyx86os/build/source/kernel && /usr/bin/x86_64-linux-gnu-gcc $(ASM_DEFINES) $(ASM_INCLUDES) $(ASM_FLAGS) -S /home/xdu/cpp/Tinyx86os/source/kernel/init/start.S -o CMakeFiles/kernel.dir/init/start.S.s
 
+source/kernel/CMakeFiles/kernel.dir/cpu/cpu.c.obj: source/kernel/CMakeFiles/kernel.dir/flags.make
+source/kernel/CMakeFiles/kernel.dir/cpu/cpu.c.obj: /home/xdu/cpp/Tinyx86os/source/kernel/cpu/cpu.c
+source/kernel/CMakeFiles/kernel.dir/cpu/cpu.c.obj: source/kernel/CMakeFiles/kernel.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/xdu/cpp/Tinyx86os/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building C object source/kernel/CMakeFiles/kernel.dir/cpu/cpu.c.obj"
+	cd /home/xdu/cpp/Tinyx86os/build/source/kernel && /usr/bin/x86_64-linux-gnu-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT source/kernel/CMakeFiles/kernel.dir/cpu/cpu.c.obj -MF CMakeFiles/kernel.dir/cpu/cpu.c.obj.d -o CMakeFiles/kernel.dir/cpu/cpu.c.obj -c /home/xdu/cpp/Tinyx86os/source/kernel/cpu/cpu.c
+
+source/kernel/CMakeFiles/kernel.dir/cpu/cpu.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/kernel.dir/cpu/cpu.c.i"
+	cd /home/xdu/cpp/Tinyx86os/build/source/kernel && /usr/bin/x86_64-linux-gnu-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/xdu/cpp/Tinyx86os/source/kernel/cpu/cpu.c > CMakeFiles/kernel.dir/cpu/cpu.c.i
+
+source/kernel/CMakeFiles/kernel.dir/cpu/cpu.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/kernel.dir/cpu/cpu.c.s"
+	cd /home/xdu/cpp/Tinyx86os/build/source/kernel && /usr/bin/x86_64-linux-gnu-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/xdu/cpp/Tinyx86os/source/kernel/cpu/cpu.c -o CMakeFiles/kernel.dir/cpu/cpu.c.s
+
 source/kernel/CMakeFiles/kernel.dir/init/init.c.obj: source/kernel/CMakeFiles/kernel.dir/flags.make
 source/kernel/CMakeFiles/kernel.dir/init/init.c.obj: /home/xdu/cpp/Tinyx86os/source/kernel/init/init.c
 source/kernel/CMakeFiles/kernel.dir/init/init.c.obj: source/kernel/CMakeFiles/kernel.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/xdu/cpp/Tinyx86os/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building C object source/kernel/CMakeFiles/kernel.dir/init/init.c.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/xdu/cpp/Tinyx86os/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building C object source/kernel/CMakeFiles/kernel.dir/init/init.c.obj"
 	cd /home/xdu/cpp/Tinyx86os/build/source/kernel && /usr/bin/x86_64-linux-gnu-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT source/kernel/CMakeFiles/kernel.dir/init/init.c.obj -MF CMakeFiles/kernel.dir/init/init.c.obj.d -o CMakeFiles/kernel.dir/init/init.c.obj -c /home/xdu/cpp/Tinyx86os/source/kernel/init/init.c
 
 source/kernel/CMakeFiles/kernel.dir/init/init.c.i: cmake_force
@@ -99,16 +113,18 @@ source/kernel/CMakeFiles/kernel.dir/init/init.c.s: cmake_force
 # Object files for target kernel
 kernel_OBJECTS = \
 "CMakeFiles/kernel.dir/init/start.S.obj" \
+"CMakeFiles/kernel.dir/cpu/cpu.c.obj" \
 "CMakeFiles/kernel.dir/init/init.c.obj"
 
 # External object files for target kernel
 kernel_EXTERNAL_OBJECTS =
 
 source/kernel/kernel: source/kernel/CMakeFiles/kernel.dir/init/start.S.obj
+source/kernel/kernel: source/kernel/CMakeFiles/kernel.dir/cpu/cpu.c.obj
 source/kernel/kernel: source/kernel/CMakeFiles/kernel.dir/init/init.c.obj
 source/kernel/kernel: source/kernel/CMakeFiles/kernel.dir/build.make
 source/kernel/kernel: source/kernel/CMakeFiles/kernel.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/xdu/cpp/Tinyx86os/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Linking C executable kernel"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/xdu/cpp/Tinyx86os/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Linking C executable kernel"
 	cd /home/xdu/cpp/Tinyx86os/build/source/kernel && $(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/kernel.dir/link.txt --verbose=$(VERBOSE)
 	cd /home/xdu/cpp/Tinyx86os/build/source/kernel && x86_64-linux-gnu-objcopy -S kernel.elf /home/xdu/cpp/Tinyx86os/image/kernel.elf
 	cd /home/xdu/cpp/Tinyx86os/build/source/kernel && x86_64-linux-gnu-objdump -x -d -S -m i386 /home/xdu/cpp/Tinyx86os/build/source/kernel/kernel.elf > kernel_dis.txt
