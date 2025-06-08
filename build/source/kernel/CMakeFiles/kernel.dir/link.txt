@@ -1,1 +1,0 @@
-x86_64-linux-gnu-ld CMakeFiles/kernel.dir/init/start.S.obj CMakeFiles/kernel.dir/cpu/cpu.c.obj CMakeFiles/kernel.dir/init/init.c.obj -m elf_i386 -T /home/xdu/cpp/Tinyx86os/source/kernel/kernel.lds -o /home/xdu/cpp/Tinyx86os/build/source/kernel/kernel.elf

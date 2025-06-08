@@ -13,11 +13,11 @@ static boot_info_t * init_boot_info;        // 启动信息
  */
 void kernel_init (boot_info_t * boot_info) {
     init_boot_info = boot_info;
-    // 初始化CPU，再重新加载
+    // 初始化CPU:设置GDT、IDT
     cpu_init();
 }
 
-
 void init_main(void) {
+    int a = 3 / 0;
     for (;;) {}
 }

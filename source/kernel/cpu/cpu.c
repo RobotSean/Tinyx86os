@@ -1,11 +1,15 @@
 /**
- * CPU设置
+ * CPU设置：设置并加载GDT表，设置并加载IDT表
  */
 #include "comm/cpu_instr.h"
 #include "cpu/cpu.h"
 #include "os_cfg.h"
+#include "cpu/irq.h"
+
 
 static segment_desc_t gdt_table[GDT_TABLE_SIZE];
+static gate_desc_t idt_table[IDT_TABLE_NR];	// 中断描述表
+
 
 /**
  * 设置段描述符
@@ -24,6 +28,18 @@ void segment_desc_set(int selector, uint32_t base, uint32_t limit, uint16_t attr
 	desc->attr = attr | (((limit >> 16) & 0xf) << 8);
 	desc->base31_24 = (base >> 24) & 0xff;
 }
+
+/**
+ * 设置门描述符
+ */
+void gate_desc_set(gate_desc_t * desc, uint16_t selector, uint32_t offset, uint16_t attr) {
+	desc->offset15_0 = offset & 0xffff;
+	desc->selector = selector;
+	desc->attr = attr;
+	desc->offset31_16 = (offset >> 16) & 0xffff;
+}
+
+
 
 /**
  * 初始化GDT
@@ -49,9 +65,27 @@ void init_gdt(void) {
     lgdt((uint32_t)gdt_table, sizeof(gdt_table));
 }
 
+
+/**
+ * @brief 中断和异常初始化
+ */
+void irq_init(void) {	
+	for (uint32_t i = 0; i < IDT_TABLE_NR; i++) {
+        //不能直接放中断处理函数的地址，因为函数结束调用后需要，iret返回，需要汇编处理
+    	gate_desc_set(idt_table + i, KERNEL_SELECTOR_CS, (uint32_t) exception_handler_unknown,
+                  GATE_P_PRESENT | GATE_DPL0 | GATE_TYPE_IDT);
+	}
+	lidt((uint32_t)idt_table, sizeof(idt_table));
+}
+
+
 /**
  * CPU初始化
  */
 void cpu_init (void) {
     init_gdt();
+    irq_init();
 }
+
+
+
