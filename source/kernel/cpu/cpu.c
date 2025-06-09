@@ -12,7 +12,7 @@ static gate_desc_t idt_table[IDT_TABLE_NR];	// 中断描述表
 
 
 /**
- * 设置段描述符
+ * 设置段描述符GDT
  */
 void segment_desc_set(int selector, uint32_t base, uint32_t limit, uint16_t attr) {
     segment_desc_t * desc = gdt_table + (selector >> 3);
@@ -30,7 +30,7 @@ void segment_desc_set(int selector, uint32_t base, uint32_t limit, uint16_t attr
 }
 
 /**
- * 设置门描述符
+ * 设置门描述符IDT
  */
 void gate_desc_set(gate_desc_t * desc, uint16_t selector, uint32_t offset, uint16_t attr) {
 	desc->offset15_0 = offset & 0xffff;
@@ -63,6 +63,41 @@ void init_gdt(void) {
 
     // 加载gdt
     lgdt((uint32_t)gdt_table, sizeof(gdt_table));
+}
+
+
+
+/**
+ * @brief 初始化8259芯片
+ */
+void init_pic(void) {
+    // 边缘触发，级联，需要配置icw4, 8086模式
+    outb(PIC0_ICW1, PIC_ICW1_ALWAYS_1 | PIC_ICW1_ICW4);
+
+    // 对应的中断号起始序号0x20
+    outb(PIC0_ICW2, IRQ_PIC_START);
+
+    // 主片IRQ2有从片
+    outb(PIC0_ICW3, 1 << 2);
+
+    // 普通全嵌套、非缓冲、非自动结束、8086模式
+    outb(PIC0_ICW4, PIC_ICW4_8086);
+
+    // 边缘触发，级联，需要配置icw4, 8086模式
+    outb(PIC1_ICW1, PIC_ICW1_ICW4 | PIC_ICW1_ALWAYS_1);
+
+    // 起始中断序号，要加上8
+    outb(PIC1_ICW2, IRQ_PIC_START + 8);
+
+    // 没有从片，连接到主片的IRQ2上
+    outb(PIC1_ICW3, 2);
+
+    // 普通全嵌套、非缓冲、非自动结束、8086模式
+    outb(PIC1_ICW4, PIC_ICW4_8086);
+
+    //设置中断屏蔽, 禁止所有中断, 允许从PIC1传来的中断
+    outb(PIC0_IMR, 0xFF & ~(1 << 2));
+    outb(PIC1_IMR, 0xFF);
 }
 
 
@@ -112,7 +147,11 @@ void irq_init(void) {
 	irq_install(IRQ20_VE, exception_handler_virtual_exception);
 
 	lidt((uint32_t)idt_table, sizeof(idt_table));
+
+	// 初始化pic 控制器
+	init_pic();
 }
+
 
 /**
  * CPU初始化
