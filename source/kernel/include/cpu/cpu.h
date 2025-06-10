@@ -6,6 +6,7 @@
 #define CPU_H
 
 #include "comm/types.h"
+#include "cpu/irq.h"
 
 #define SEG_G				(1 << 15)		// 设置段界限的单位，1-4KB，0-字节
 #define SEG_D				(1 << 14)		// 控制是否是32位、16位的代码或数据段
@@ -68,6 +69,7 @@ typedef struct _gate_desc_t {
 
 void cpu_init (void);
 void irq_init(void);
+int irq_install(int irq_num, irq_handler_t handler);
 void segment_desc_set(int selector, uint32_t base, uint32_t limit, uint16_t attr);
 void gate_desc_set(gate_desc_t * desc, uint16_t selector, uint32_t offset, uint16_t attr);
 

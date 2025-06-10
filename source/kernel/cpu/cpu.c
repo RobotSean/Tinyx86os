@@ -1,11 +1,11 @@
 /**
  * CPU设置：设置并加载GDT表，设置并加载IDT表
  */
-#include "comm/cpu_instr.h"
+
 #include "cpu/cpu.h"
 #include "os_cfg.h"
 #include "cpu/irq.h"
-
+#include "comm/cpu_instr.h"
 
 static segment_desc_t gdt_table[GDT_TABLE_SIZE];
 static gate_desc_t idt_table[IDT_TABLE_NR];	// 中断描述表

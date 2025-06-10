@@ -16,6 +16,7 @@
         "elf.h": "c",
         "os_cfg.h": "c",
         "cpu.h": "c",
-        "irq.h": "c"
+        "irq.h": "c",
+        "log.h": "c"
     },
 }
