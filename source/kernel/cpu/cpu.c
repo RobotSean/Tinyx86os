@@ -68,6 +68,25 @@ void init_gdt(void) {
 
 
 /**
+ * 分配一个GDT推荐表符
+ */
+int gdt_alloc_desc (void) {
+    // 跳过第0项
+    for (int i = 1; i < GDT_TABLE_SIZE; i++) {
+        segment_desc_t * desc = gdt_table + i;
+        if (desc->attr == 0) {
+            return i * sizeof(segment_desc_t);
+        }
+    }
+
+    return -1;
+}
+
+
+
+
+
+/**
  * @brief 初始化8259芯片
  */
 void init_pic(void) {
@@ -151,6 +170,22 @@ void irq_init(void) {
 	// 初始化pic 控制器
 	init_pic();
 }
+
+
+/**
+ * 切换至TSS，即跳转实现任务切换
+ */
+void switch_to_tss (uint32_t tss_selector) {
+	/*
+	**偏移量为0为什么？
+	*CPU 会使用 **`ljmpl`** 指令（或类似的指令）跳转到新的任务。此时，偏移量为 `0` 是为了确保 CPU 跳转到目标 TSS 段的起始位置。
+	*选择子通过 GDT 查找目标 TSS 段的描述符，TSS 段的描述符基址被设置为：TSS 段的起始位置
+	*TSS 段的起始位置+offset(0)->定位到TSS 段的起始位置。
+	*/
+    far_jump(tss_selector, 0);
+}
+
+
 
 
 /**
