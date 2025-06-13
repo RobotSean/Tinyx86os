@@ -14,7 +14,7 @@ set(CMAKE_C_FLAGS "-g -c -O0 -m32 -fno-pie -fno-stack-protector -fno-asynchronou
 
 # 汇编器与参数配置
 set(CMAKE_ASM_COMPILER "${TOOL_PREFIX}gcc")
-set(CMAKE_ASM_FLAGS "-m32 -g")
+set(CMAKE_ASM_FLAGS "-m32 -g") 
 set(CMAKE_ASM_SOURCE_FILE_EXTENSIONS "asm")
 
 # 链接器工具
