@@ -3,6 +3,7 @@
 #include "cpu/cpu.h"
 #include "os_cfg.h"
 #include "comm/cpu_instr.h"
+#include "core/task.h"
 static uint32_t sys_tick;						// 系统启动后的tick数量
 
 /**
@@ -14,6 +15,8 @@ void do_handler_timer (exception_frame_t *frame) {
     // 先发EOI，而不是放在最后
     // 放最后将从任务中切换出去之后，除非任务再切换回来才能继续噢应
     pic_send_eoi(IRQ0_TIMER);
+
+    task_time_tick();
 }
 
 
