@@ -71,6 +71,8 @@ void init_gdt(void) {
  * 分配一个GDT推荐表符
  */
 int gdt_alloc_desc (void) {
+
+	irq_state_t state = irq_enter_protection();
     // 跳过第0项
     for (int i = 1; i < GDT_TABLE_SIZE; i++) {
         segment_desc_t * desc = gdt_table + i;
@@ -78,6 +80,7 @@ int gdt_alloc_desc (void) {
             return i * sizeof(segment_desc_t);
         }
     }
+	irq_leave_protection(state);
 
     return -1;
 }

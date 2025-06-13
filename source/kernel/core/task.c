@@ -6,7 +6,7 @@
 
 
 static task_manager_t task_manager;     // 任务管理器
-
+static uint32_t idle_task_stack[IDLE_STACK_SIZE];	// 空闲任务堆栈
 
 static int tss_init (task_t * task, uint32_t entry, uint32_t esp) {
     // 为TSS分配GDT
@@ -56,8 +56,12 @@ int task_init (task_t *task, const char * name, uint32_t entry, uint32_t esp){
     list_node_init(&task->run_node);
 
     // 插入就绪队列中和所有的任务队列中
+    irq_state_t state = irq_enter_protection();
+
     task_set_ready(task);
     list_insert_last(&task_manager.task_list, &task->all_node);
+
+    irq_leave_protection(state);
     return 0;
 }
 
@@ -90,6 +94,17 @@ task_t * task_first_task (void) {
     return &task_manager.first_task;
 }
 
+
+/**
+ * @brief 空闲任务
+ */
+static void idle_task_entry (void) {
+    for (;;) {
+        hlt();
+    }
+}
+
+
 /**
  * @brief 任务管理器初始化
  */
@@ -97,6 +112,13 @@ void task_manager_init (void) {
     // 各队列初始化
     list_init(&task_manager.ready_list);
     list_init(&task_manager.task_list);
+    list_init(&task_manager.sleep_list);
+
+    // 空闲任务初始化
+    task_init(&task_manager.idle_task,
+        "idle task", 
+        (uint32_t)idle_task_entry, 
+        (uint32_t)(idle_task_stack + IDLE_STACK_SIZE));     // 里面的值不必要写
 
     task_manager.curr_task = (task_t *)0;
 }
@@ -105,21 +127,31 @@ void task_manager_init (void) {
  * @brief 将任务插入就绪队列
  */
 void task_set_ready(task_t *task) {
-    list_insert_last(&task_manager.ready_list, &task->run_node);
-    task->state = TASK_READY;
+    if (task != &task_manager.idle_task) {
+        list_insert_last(&task_manager.ready_list, &task->run_node);
+        task->state = TASK_READY;
+    }
 }
 
 /**
  * @brief 将任务从就绪队列移除
  */
 void task_set_block (task_t *task) {
-    list_remove(&task_manager.ready_list, &task->run_node);
+    if (task != &task_manager.idle_task) {
+        list_remove(&task_manager.ready_list, &task->run_node);
+    }
 }
 
 /**
  * @brief 获取下一将要运行的任务
  */
 static task_t * task_next_run (void) {
+     // 如果没有任务，则运行空闲任务
+    if (list_count(&task_manager.ready_list) == 0) {
+        return &task_manager.idle_task;
+    }
+
+
     // 普通任务
     list_node_t * task_node = list_first(&task_manager.ready_list);
     return list_node_parent(task_node, task_t, run_node);
@@ -132,10 +164,40 @@ task_t * task_current (void) {
     return task_manager.curr_task;
 }
 
+
+
+/**
+ * @brief 将任务加入睡眠状态
+ */
+void task_set_sleep(task_t *task, uint32_t ticks) {
+    if (ticks <= 0) {
+        return;
+    }
+
+    task->sleep_ticks = ticks;
+    task->state = TASK_SLEEP;
+    list_insert_last(&task_manager.sleep_list, &task->run_node);
+}
+
+
+/**
+ * @brief 将任务从延时队列移除
+ * 
+ * @param task 
+ */
+void task_set_wakeup (task_t *task) {
+    list_remove(&task_manager.sleep_list, &task->run_node);
+}
+
+
+
+
 /**
  * @brief 当前任务主动放弃CPU
  */
 int sys_yield (void) {
+    irq_state_t state = irq_enter_protection();
+
     if (list_count(&task_manager.ready_list) > 1) {
         task_t * curr_task = task_current();
 
@@ -147,7 +209,7 @@ int sys_yield (void) {
         // 由于某些原因运行后阻塞或删除，再回到这里切换将发生问题
         task_dispatch();
     }
-
+    irq_leave_protection(state);
     return 0;
 }
 
@@ -172,6 +234,7 @@ void task_dispatch (void) {
 void task_time_tick (void) {
     task_t * curr_task = task_current();
 
+    irq_state_t state = irq_enter_protection();
     // 时间片的处理
     if (--curr_task->slice_ticks == 0) {
         // 时间片用完，重新加载时间片
@@ -179,9 +242,53 @@ void task_time_tick (void) {
         curr_task->slice_ticks = curr_task->time_slice;
 
         // 调整队列的位置到尾部，不用直接操作队列
+        // 当前是idle不处理
         task_set_block(curr_task);
         task_set_ready(curr_task);
-
-        task_dispatch();
     }
+
+    // 睡眠处理
+    list_node_t * curr = list_first(&task_manager.sleep_list);
+    while (curr) {
+        list_node_t * next = list_node_next(curr);
+
+        task_t * task = list_node_parent(curr, task_t, run_node);
+        if (--task->sleep_ticks == 0) {
+            // 延时时间到达，从睡眠队列中移除，送至就绪队列
+            task_set_wakeup(task);
+            task_set_ready(task);
+        }
+        curr = next;
+    }
+
+    //ready队列为空,则切换至idle,ready不为空则，取队首
+    task_dispatch();
+
+
+    irq_leave_protection(state);
 }
+
+
+/**
+ * @brief 任务进入睡眠状态
+ * 
+ * @param ms 
+ */
+void sys_msleep (uint32_t ms) {
+    // 至少延时1个tick
+    if (ms < OS_TICK_MS) {
+        ms = OS_TICK_MS;
+    }
+
+    irq_state_t state = irq_enter_protection();
+
+    //从就绪队列移除，加入睡眠队列
+    task_set_block(task_manager.curr_task);
+    task_set_sleep(task_manager.curr_task, (ms + (OS_TICK_MS - 1))/ OS_TICK_MS);
+    
+    // 进行一次调度
+    task_dispatch();
+
+    irq_leave_protection(state);
+}
+

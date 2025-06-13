@@ -6,6 +6,7 @@
 #include "tools/klib.h"
 #include "tools/log.h"
 #include "os_cfg.h"
+#include "cpu/irq.h"
 
 // 目标用串口，参考资料：https://wiki.osdev.org/Serial_Ports
 #define COM1_PORT           0x3F8       // RS232端口0初始化
@@ -40,14 +41,17 @@ void log_printf(const char * fmt, ...) {
     va_start(args, fmt);
     kernel_vsprintf(str_buf, fmt, args);
     va_end(args);
-    
-
     const char * p = str_buf;    
+
+    // 显示，如果发送速度太慢，会造成这里关中断太长时间
+    // 所以，这里这样做不是好办法
+    irq_state_t state = irq_enter_protection();
     while (*p != '\0') {
         while ((inb(COM1_PORT + 5) & (1 << 6)) == 0);
         outb(COM1_PORT, *p++);
     }
     outb(COM1_PORT, '\r');
     outb(COM1_PORT, '\n');
+    irq_leave_protection(state);
 }
 

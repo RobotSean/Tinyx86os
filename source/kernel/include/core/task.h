@@ -23,6 +23,7 @@ typedef struct _task_t {
 
 	char name[TASK_NAME_SIZE];		// 任务名字
 
+	int sleep_ticks;		// 睡眠时间
 	int time_slice;			// 时间片
 	int slice_ticks;		// 递减时间片计数
 
@@ -40,9 +41,11 @@ typedef struct _task_manager_t {
     task_t * curr_task;         // 当前运行的任务
 
 	list_t ready_list;			// 就绪队列
+	list_t sleep_list;          // 延时队列
 	list_t task_list;			// 所有已创建任务的队列
 
 	task_t first_task;			// 内核任务
+	task_t idle_task;			// 空闲任务
 }task_manager_t;
 
 
@@ -60,5 +63,6 @@ void task_manager_init (void);
 void task_first_init (void);
 task_t * task_first_task (void);
 
+void sys_msleep (uint32_t ms);
 
 #endif
