@@ -6,10 +6,10 @@
 #include "os_cfg.h"
 #include "cpu/irq.h"
 #include "comm/cpu_instr.h"
-
+#include "ipc/mutex.h"
 static segment_desc_t gdt_table[GDT_TABLE_SIZE];
 static gate_desc_t idt_table[IDT_TABLE_NR];	// 中断描述表
-
+static mutex_t mutex;
 
 /**
  * 设置段描述符GDT
@@ -71,18 +71,20 @@ void init_gdt(void) {
  * 分配一个GDT推荐表符
  */
 int gdt_alloc_desc (void) {
+	int i;
 
-	irq_state_t state = irq_enter_protection();
     // 跳过第0项
-    for (int i = 1; i < GDT_TABLE_SIZE; i++) {
+    mutex_lock(&mutex);
+    for (i = 1; i < GDT_TABLE_SIZE; i++) {
         segment_desc_t * desc = gdt_table + i;
         if (desc->attr == 0) {
-            return i * sizeof(segment_desc_t);
+            desc->attr = SEG_P_PRESENT;     // 标记为占用状态
+            break;
         }
     }
-	irq_leave_protection(state);
+    mutex_unlock(&mutex);
 
-    return -1;
+    return i >= GDT_TABLE_SIZE ? -1 : i * sizeof(segment_desc_t);;
 }
 
 
@@ -195,7 +197,8 @@ void switch_to_tss (uint32_t tss_selector) {
  * CPU初始化
  */
 void cpu_init (void) {
-    init_gdt();
+    mutex_init(&mutex);
+	init_gdt();
     irq_init();
 }
 

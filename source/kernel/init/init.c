@@ -30,19 +30,20 @@ void kernel_init (boot_info_t * boot_info) {
 
 static task_t init_task;
 static uint32_t init_task_stack[1024];	// 空闲任务堆栈
-static sem_t sem;
+static sem_t sem_1;
+static sem_t sem_2;
+
+int count = 0;
 
 /**
  * 初始任务函数
  * 目前暂时用函数表示，以后将会作为加载为进程
  */
 void init_task_entry(void) {
-    int count = 0;
-
     for (;;) {
-        sem_wait(&sem);
-        log_printf("init task: %d", count++);
-        sem_notify(&sem);
+        sem_wait(&sem_1);
+        log_printf("init task : %d", count++);
+        sem_notify(&sem_2);
     }
 }
 
@@ -63,16 +64,15 @@ void init_main(void) {
 
     
     // 放在开中断前，以避免定时中断切换至其它任务，而此时信号量还未初始化
-    sem_init(&sem, 0);
+    sem_init(&sem_1, 0);
+    sem_init(&sem_2, 0);
     irq_enable_global();
 
 
-
-    int count = 0;
     for (;;) {
-        sem_notify(&sem);
+        sem_notify(&sem_1);
         log_printf("first task: %d", count++);
-        sem_wait(&sem);  
+        sem_wait(&sem_2);  
     }
 
 }

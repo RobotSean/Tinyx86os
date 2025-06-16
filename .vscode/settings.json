@@ -20,6 +20,9 @@
         "log.h": "c",
         "klib.h": "c",
         "time.h": "c",
-        "list.h": "c"
+        "list.h": "c",
+        "mutex.h": "c",
+        "condition_variable": "c",
+        "mutex": "c"
     },
 }
