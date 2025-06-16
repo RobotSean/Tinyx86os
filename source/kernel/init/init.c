@@ -12,6 +12,7 @@
 #include "core/task.h"
 #include "tools/list.h"
 #include "ipc/sem.h"
+#include "core/memory.h"
 static boot_info_t * init_boot_info;        // 启动信息
 /**
  * 内核入口
@@ -22,7 +23,7 @@ void kernel_init (boot_info_t * boot_info) {
     cpu_init();
     // 内存初始化要放前面一点，因为后面的代码可能需要内存分配
     memory_init(boot_info);
-    
+
     log_init();
     time_init();
 
