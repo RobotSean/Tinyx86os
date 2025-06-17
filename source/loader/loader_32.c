@@ -139,6 +139,10 @@ void load_kernel(void) {
 		 die(-1);
 	}
  
+    // 开启分页机制
+	enable_page_mode();
+
+    
 	// 转换为函数指针，然后跳进内核
 	((void (*)(boot_info_t *))kernel_entry)(&boot_info);
 }
