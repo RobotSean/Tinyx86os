@@ -9,7 +9,7 @@
 static task_manager_t task_manager;     // 任务管理器
 static uint32_t idle_task_stack[IDLE_STACK_SIZE];	// 空闲任务堆栈
 
-static int tss_init (task_t * task, uint32_t entry, uint32_t esp) {
+static int tss_init (task_t * task, int flag, uint32_t entry, uint32_t esp) {
     // 为TSS分配GDT
     int tss_sel = gdt_alloc_desc();
     if (tss_sel < 0) {
@@ -22,13 +22,29 @@ static int tss_init (task_t * task, uint32_t entry, uint32_t esp) {
 
     // tss段初始化
     kernel_memset(&task->tss, 0, sizeof(tss_t));
+
+
+    int code_sel, data_sel;
+    if (flag & TASK_FLAG_SYSTEM) {
+        code_sel = KERNEL_SELECTOR_CS;
+        data_sel = KERNEL_SELECTOR_DS;
+    } else {
+        // 注意加了RP3,不然将产生段保护错误
+        code_sel = task_manager.app_code_sel | SEG_RPL3;
+        data_sel = task_manager.app_data_sel | SEG_RPL3;
+    }
+
+
     task->tss.eip = entry;
     task->tss.esp = task->tss.esp0 = esp;
     task->tss.ss0 = KERNEL_SELECTOR_DS;
-    task->tss.eflags = EFLAGS_DEFAULT | EFLAGS_IF;
-    task->tss.es = task->tss.ss = task->tss.ds
-            = task->tss.fs = task->tss.gs = KERNEL_SELECTOR_DS;   // 暂时写死
-    task->tss.cs = KERNEL_SELECTOR_CS;    // 暂时写死
+    
+    task->tss.eflags = EFLAGS_DEFAULT| EFLAGS_IF;
+
+    task->tss.es = task->tss.ss = task->tss.ds = task->tss.fs 
+            = task->tss.gs = data_sel;   // 全部采用同一数据段
+    task->tss.cs = code_sel; 
+
     task->tss.iomap = 0;
 
 
@@ -48,10 +64,10 @@ static int tss_init (task_t * task, uint32_t entry, uint32_t esp) {
 /**
  * @brief 初始化任务
  */
-int task_init (task_t *task, const char * name, uint32_t entry, uint32_t esp){
+int task_init (task_t *task, const char * name, int flag, uint32_t entry, uint32_t esp){
     ASSERT(task != (task_t *)0);
 
-    int err = tss_init(task, entry, esp);
+    int err = tss_init(task, flag, entry, esp);
     if (err < 0) {
         log_printf("init task failed.\n");
         return err;
@@ -114,7 +130,7 @@ void task_first_init (void) {
 
     // 第一个任务代码量小一些，好和栈放在1个页面呢
     // 这样就不要立即考虑还要给栈分配空间的问题
-    task_init(&task_manager.first_task, "first task", first_start, 0);     // 里面的值不必要写
+    task_init(&task_manager.first_task, "first task", 0, first_start, 0);     // 里面的值不必要写
     task_manager.curr_task = &task_manager.first_task;
 
     // 更新页表地址为自己的
@@ -128,7 +144,7 @@ void task_first_init (void) {
 
     // 写TR寄存器，指示当前运行的第一个任务
     write_tr(task_manager.first_task.tss_sel);
- 
+
 }
 
 /**
@@ -153,6 +169,22 @@ static void idle_task_entry (void) {
  * @brief 任务管理器初始化
  */
 void task_manager_init (void) {
+
+    //数据段和代码段，使用DPL3，所有应用共用同一个
+    int sel = gdt_alloc_desc();
+    segment_desc_set(sel, 0x00000000, 0xFFFFFFFF,
+                     SEG_P_PRESENT | SEG_DPL3 | SEG_S_NORMAL |
+                     SEG_TYPE_DATA | SEG_TYPE_RW | SEG_D);
+    task_manager.app_data_sel = sel;
+
+    sel = gdt_alloc_desc();
+    segment_desc_set(sel, 0x00000000, 0xFFFFFFFF,
+                     SEG_P_PRESENT | SEG_DPL3 | SEG_S_NORMAL |
+                     SEG_TYPE_CODE | SEG_TYPE_RW | SEG_D);
+    task_manager.app_code_sel = sel;
+
+
+
     // 各队列初始化
     list_init(&task_manager.ready_list);
     list_init(&task_manager.task_list);
@@ -161,6 +193,7 @@ void task_manager_init (void) {
     // 空闲任务初始化
     task_init(&task_manager.idle_task,
         "idle task", 
+        TASK_FLAG_SYSTEM,
         (uint32_t)idle_task_entry, 
         (uint32_t)(idle_task_stack + IDLE_STACK_SIZE));     // 里面的值不必要写
 
@@ -266,7 +299,6 @@ void task_dispatch (void) {
         task_t * from = task_manager.curr_task;
         task_manager.curr_task = to;
 
-        to->state = TASK_RUNNING;
         task_switch_from_to(from, to);
     }
 }

@@ -34,6 +34,11 @@
 #define EFLAGS_DEFAULT      (1 << 1)
 
 
+#define SEG_RPL0                (0 << 0)
+#define SEG_RPL3                (3 << 0)
+
+
+
 /**
  * GDT描述符
  */
