@@ -22,8 +22,16 @@ static int tss_init (task_t * task, int flag, uint32_t entry, uint32_t esp) {
 
     // tss段初始化
     kernel_memset(&task->tss, 0, sizeof(tss_t));
+    
 
-
+    // 分配内核栈，得到的是物理地址
+    uint32_t kernel_stack = memory_alloc_page();
+    if (kernel_stack == 0) {
+        goto tss_init_failed;
+    }
+    
+    
+    // 根据不同的权限选择不同的访问选择子
     int code_sel, data_sel;
     if (flag & TASK_FLAG_SYSTEM) {
         code_sel = KERNEL_SELECTOR_CS;
@@ -36,7 +44,8 @@ static int tss_init (task_t * task, int flag, uint32_t entry, uint32_t esp) {
 
 
     task->tss.eip = entry;
-    task->tss.esp = task->tss.esp0 = esp;
+    task->tss.esp = esp ? esp : kernel_stack + MEM_PAGE_SIZE;  // 未指定栈则用内核栈，即运行在特权级0的进程
+    task->tss.esp0 = kernel_stack + MEM_PAGE_SIZE;
     task->tss.ss0 = KERNEL_SELECTOR_DS;
     
     task->tss.eflags = EFLAGS_DEFAULT| EFLAGS_IF;
@@ -51,13 +60,20 @@ static int tss_init (task_t * task, int flag, uint32_t entry, uint32_t esp) {
     // 页表初始化
     uint32_t page_dir = memory_create_uvm();
     if (page_dir == 0) {
-        gdt_free_sel(tss_sel);
-        return -1;
+        goto tss_init_failed;
     }
     task->tss.cr3 = page_dir;
 
     task->tss_sel = tss_sel;
     return 0;
+
+tss_init_failed:
+    gdt_free_sel(tss_sel);
+
+    if (kernel_stack) {
+        memory_free_page(kernel_stack);
+    }
+    return -1;
 }
 
 
@@ -130,16 +146,13 @@ void task_first_init (void) {
 
     // 第一个任务代码量小一些，好和栈放在1个页面呢
     // 这样就不要立即考虑还要给栈分配空间的问题
-    task_init(&task_manager.first_task, "first task", 0, first_start, 0);     // 里面的值不必要写
+    task_init(&task_manager.first_task, "first task", 0, first_start, first_start + alloc_size);     // 里面的值不必要写
     task_manager.curr_task = &task_manager.first_task;
 
     // 更新页表地址为自己的
     mmu_set_page_dir(task_manager.first_task.tss.cr3);
 
-    // 分配一页内存供代码存放使用，然后将代码复制过去
-    memory_alloc_page_for(first_start,  alloc_size, PTE_P | PTE_W);
-
-
+    memory_alloc_page_for(first_start,  alloc_size, PTE_P | PTE_W| PTE_U);
     kernel_memcpy((void *)first_start, (void *)s_first_task, copy_size);
 
     // 写TR寄存器，指示当前运行的第一个任务
@@ -193,9 +206,9 @@ void task_manager_init (void) {
     // 空闲任务初始化
     task_init(&task_manager.idle_task,
         "idle task", 
-        0,
+        TASK_FLAG_SYSTEM,
         (uint32_t)idle_task_entry, 
-        (uint32_t)(idle_task_stack + IDLE_STACK_SIZE));     // 里面的值不必要写
+        0);     // 运行于内核模式，无需指定特权级3的栈
 
     task_manager.curr_task = (task_t *)0;
 }

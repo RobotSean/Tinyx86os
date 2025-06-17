@@ -25,6 +25,7 @@
         "condition_variable": "c",
         "mutex": "c",
         "mmu.h": "c",
-        "memory.h": "c"
+        "memory.h": "c",
+        "bitmap.h": "c"
     },
 }
