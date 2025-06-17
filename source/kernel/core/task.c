@@ -193,7 +193,7 @@ void task_manager_init (void) {
     // 空闲任务初始化
     task_init(&task_manager.idle_task,
         "idle task", 
-        TASK_FLAG_SYSTEM,
+        0,
         (uint32_t)idle_task_entry, 
         (uint32_t)(idle_task_stack + IDLE_STACK_SIZE));     // 里面的值不必要写
 

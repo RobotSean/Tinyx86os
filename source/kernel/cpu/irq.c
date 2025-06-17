@@ -8,7 +8,7 @@
 static void dump_core_regs (exception_frame_t * frame) {
     // 打印CPU寄存器相关内容
     uint32_t esp, ss;
-    if (frame->cs & 0x7) {
+    if (frame->cs & 0x3) {
         ss = frame->ds;
         esp = frame->esp;
     } else {
