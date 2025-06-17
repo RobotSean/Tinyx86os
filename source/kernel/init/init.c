@@ -31,25 +31,21 @@ void kernel_init (boot_info_t * boot_info) {
 }
 
 
-
-static task_t init_task;
-static uint32_t init_task_stack[1024];	// 空闲任务堆栈
-static sem_t sem_1;
-static sem_t sem_2;
-
-int count = 0;
-
 /**
- * 初始任务函数
- * 目前暂时用函数表示，以后将会作为加载为进程
+ * @brief 移至第一个进程运行
  */
-void init_task_entry(void) {
-    for (;;) {
-        sem_wait(&sem_1);
-        log_printf("init task : %d", count++);
-        sem_notify(&sem_2);
-    }
+void move_to_first_task(void) {
+    task_t * curr = task_current();
+    ASSERT(curr != 0);
+
+    tss_t * tss = &(curr->tss);
+
+    // 也可以使用类似boot跳loader中的函数指针跳转
+    // 这里用jmp是因为后续需要使用内联汇编添加其它代码
+    __asm__ __volatile__(
+            "jmp *%[ip]"	::[ip]"r"(tss->eip));
 }
+
 
 
 void init_main(void) {
@@ -61,22 +57,9 @@ void init_main(void) {
     log_printf("Version: %s, name: %s", OS_VERSION, "tiny x86 os");
     log_printf("%d %d %x %c", -123, 123456, 0x12345, 'a');
 
-
+    
     task_first_init();
-    task_init(&init_task, "init task", (uint32_t)init_task_entry, (uint32_t)&init_task_stack[1024]);
-    
 
-    
-    // 放在开中断前，以避免定时中断切换至其它任务，而此时信号量还未初始化
-    sem_init(&sem_1, 0);
-    sem_init(&sem_2, 0);
-    irq_enable_global();
-
-
-    for (;;) {
-        sem_notify(&sem_1);
-        log_printf("first task: %d", count++);
-        sem_wait(&sem_2);  
-    }
-
+    //已经切换了页表，现在能寻址0x8000 0000 以上了
+    move_to_first_task();
 }

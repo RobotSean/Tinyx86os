@@ -5,7 +5,7 @@
 #include "os_cfg.h"
 #include "core/memory.h"
 #include "cpu/cpu.h"
-
+#include "cpu/mmu.h"
 static task_manager_t task_manager;     // 任务管理器
 static uint32_t idle_task_stack[IDLE_STACK_SIZE];	// 空闲任务堆栈
 
@@ -88,12 +88,47 @@ void task_switch_from_to (task_t * from, task_t * to) {
 }
 
 
+
+/**
+ * @brief 初始进程的初始化
+ * 没有采用从磁盘加载的方式，因为需要用到文件系统，并且最好是和kernel绑在一定，这样好加载
+ * 当然，也可以采用将init的源文件和kernel的一起编译。此里要调整好kernel.lds，在其中
+ * 将init加载地址设置成和内核一起的，运行地址设置成用户进程运行的高处。
+ * 不过，考虑到init可能用到newlib库，如果与kernel合并编译，在lds中很难控制将newlib的
+ * 代码与init进程的放在一起，有可能与kernel放在了一起。
+ * 综上，最好是分离。
+ */
+
 void task_first_init (void) {
-    task_init(&task_manager.first_task, "first task", 0, 0);
+    void first_task_entry (void);
+
+    // 以下获得的是bin文件在内存中的物理地址
+    extern uint8_t s_first_task[], e_first_task[];
+
+    // 分配的空间比实际存储的空间要大一些，多余的用于放置栈
+    uint32_t copy_size = (uint32_t)(e_first_task - s_first_task);
+    uint32_t alloc_size = 10 * MEM_PAGE_SIZE;
+    ASSERT(copy_size < alloc_size);
+
+    uint32_t first_start = (uint32_t)first_task_entry;
+
+    // 第一个任务代码量小一些，好和栈放在1个页面呢
+    // 这样就不要立即考虑还要给栈分配空间的问题
+    task_init(&task_manager.first_task, "first task", first_start, 0);     // 里面的值不必要写
+    task_manager.curr_task = &task_manager.first_task;
+
+    // 更新页表地址为自己的
+    mmu_set_page_dir(task_manager.first_task.tss.cr3);
+
+    // 分配一页内存供代码存放使用，然后将代码复制过去
+    memory_alloc_page_for(first_start,  alloc_size, PTE_P | PTE_W);
+
+
+    kernel_memcpy((void *)first_start, (void *)s_first_task, copy_size);
 
     // 写TR寄存器，指示当前运行的第一个任务
     write_tr(task_manager.first_task.tss_sel);
-    task_manager.curr_task = &task_manager.first_task;
+ 
 }
 
 /**

@@ -23,6 +23,8 @@
         "list.h": "c",
         "mutex.h": "c",
         "condition_variable": "c",
-        "mutex": "c"
+        "mutex": "c",
+        "mmu.h": "c",
+        "memory.h": "c"
     },
 }
