@@ -183,6 +183,13 @@ void irq_init(void) {
 	irq_install(IRQ19_XM, exception_handler_smd_exception);
 	irq_install(IRQ20_VE, exception_handler_virtual_exception);
 
+
+     // 注意权限设置为3
+    gate_desc_set(idt_table + 0x80, KERNEL_SELECTOR_CS, (uint32_t) exception_handler_syscall,
+    GATE_P_PRESENT | GATE_DPL3 | GATE_TYPE_IDT);
+
+
+
 	lidt((uint32_t)idt_table, sizeof(idt_table));
 
 	// 初始化pic 控制器

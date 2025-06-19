@@ -21,27 +21,55 @@ static const syscall_handler_t sys_table[] = {
 	[SYS_msleep] = (syscall_handler_t)sys_msleep,
     [SYS_getpid] =(syscall_handler_t)sys_getpid,
 
-    
+
 	[SYS_printmsg] = (syscall_handler_t)sys_print_msg,
 };
 
+// /**
+//  * 处理系统调用。该函数由系统调用函数调用
+//  */
+// void do_handler_syscall (syscall_frame_t * frame) {
+// 	// 超出边界，返回错误
+//     if (frame->func_id < sizeof(sys_table) / sizeof(sys_table[0])) {
+// 		// 查表取得处理函数，然后调用处理
+// 		syscall_handler_t handler = sys_table[frame->func_id];
+// 		if (handler) {
+// 			int ret = handler(frame->arg0, frame->arg1, frame->arg2, frame->arg3);
+//             frame->eax = ret;
+//             return;
+// 		}
+// 	}
+
+// 	// 不支持的系统调用，打印出错信息
+// 	task_t * task = task_current();
+// 	log_printf("task: %s, Unknown syscall: %d", task->name,  frame->func_id);
+//     frame->eax = -1;  // 设置系统调用的返回值，由eax传递
+// }
+
+
 /**
- * 处理系统调用。该函数由系统调用函数调用
+ * 处理系统调用。该函数由系统调用函数调用 int 0x80
  */
-void do_handler_syscall (syscall_frame_t * frame) {
+void do_handler_syscall (exception_frame_t * frame) {
+	int func_id = frame->eax;
+	int arg0 = frame->ebx;
+	int arg1 = frame->ecx;
+	int arg2 = frame->edx;
+	int arg3 = frame->esi;
+
 	// 超出边界，返回错误
-    if (frame->func_id < sizeof(sys_table) / sizeof(sys_table[0])) {
+    if (func_id < sizeof(sys_table) / sizeof(sys_table[0])) {
 		// 查表取得处理函数，然后调用处理
-		syscall_handler_t handler = sys_table[frame->func_id];
+		syscall_handler_t handler = sys_table[func_id];
 		if (handler) {
-			int ret = handler(frame->arg0, frame->arg1, frame->arg2, frame->arg3);
-            frame->eax = ret;
+			int ret = handler(arg0, arg1, arg2, arg3);
+			frame->eax = ret;  // 设置系统调用的返回值，由eax传递
             return;
 		}
 	}
 
 	// 不支持的系统调用，打印出错信息
 	task_t * task = task_current();
-	log_printf("task: %s, Unknown syscall: %d", task->name,  frame->func_id);
+	log_printf("task: %s, Unknown syscall: %d", task->name,  func_id);
     frame->eax = -1;  // 设置系统调用的返回值，由eax传递
 }
