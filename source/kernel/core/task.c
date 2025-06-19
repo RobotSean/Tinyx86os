@@ -100,6 +100,7 @@ int task_init (task_t *task, const char * name, int flag, uint32_t entry, uint32
 
     // 插入就绪队列中和所有的任务队列中
     irq_state_t state = irq_enter_protection();
+    task->pid = (uint32_t)task;   // 使用地址，能唯一
     task_set_ready(task);
     list_insert_last(&task_manager.task_list, &task->all_node);
     irq_leave_protection(state);
@@ -381,3 +382,11 @@ void sys_msleep (uint32_t ms) {
     irq_leave_protection(state);
 }
 
+
+/**
+ * 返回任务的pid
+ */
+int sys_getpid (void) {
+    task_t * curr_task = task_current();
+    return curr_task->pid;
+}
