@@ -17,4 +17,7 @@
 
 #define IDLE_STACK_SIZE       1024        // 空闲任务栈
 
+#define TASK_NR             128            // 进程的数量
+
+
 #endif //OS_OS_CFG_H
