@@ -27,6 +27,8 @@
         "mmu.h": "c",
         "memory.h": "c",
         "bitmap.h": "c",
-        "syscall.h": "c"
+        "syscall.h": "c",
+        "fs.h": "c",
+        "stat.h": "c"
     },
 }

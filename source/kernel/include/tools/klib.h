@@ -16,6 +16,8 @@ static inline uint32_t down2 (uint32_t size, uint32_t bound) {
     return size & ~(bound - 1);
 }
 
+int strings_count (char ** start);
+char * get_file_name (char * name);
 
 void kernel_strcpy (char * dest, const char * src);
 void kernel_strncpy(char * dest, const char * src, int size);
