@@ -104,6 +104,8 @@ int task_init (task_t *task, const char * name, int flag, uint32_t entry, uint32
     task->time_slice = TASK_TIME_SLICE_DEFAULT;
     task->slice_ticks = task->time_slice;
     task->parent = (task_t *)0;
+    task->heap_start = 0;
+    task->heap_end = 0;
     list_node_init(&task->all_node);
     list_node_init(&task->run_node);
     list_node_init(&task->wait_node);
@@ -187,6 +189,8 @@ void task_first_init (void) {
     // 第一个任务代码量小一些，好和栈放在1个页面呢
     // 这样就不要立即考虑还要给栈分配空间的问题
     task_init(&task_manager.first_task, "first task", 0, first_start, first_start + alloc_size);     // 里面的值不必要写
+    task_manager.first_task.heap_start = (uint32_t)e_first_task;  // 这里不对
+    task_manager.first_task.heap_end = task_manager.first_task.heap_start;
     task_manager.curr_task = &task_manager.first_task;
 
     // 更新页表地址为自己的
@@ -637,6 +641,9 @@ static uint32_t load_elf_file (task_t * task, const char * name, uint32_t page_d
             log_printf("load program hdr failed");
             goto load_failed;
         }
+        // 简单起见，不检查了，以最后的地址为bss的地址
+        task->heap_start = elf_phdr.p_vaddr + elf_phdr.p_memsz;
+        task->heap_end = task->heap_start;
    }
 
     sys_close(file);
