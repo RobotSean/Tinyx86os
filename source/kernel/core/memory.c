@@ -6,7 +6,7 @@
 #include "core/memory.h"
 #include "tools/klib.h"
 #include "cpu/mmu.h"
-
+#include "dev/console.h"
 
 static addr_alloc_t paddr_alloc;        // 物理地址分配结构
 static pde_t kernel_page_dir[PDE_CNT] __attribute__((aligned(MEM_PAGE_SIZE))); // 内核页目录表
@@ -166,6 +166,7 @@ void create_kernel_table (void) {
         {s_data,        (void *)(MEM_EBDA_START - 1),   s_data,        PTE_W},      // 内核数据区
         // 扩展存储空间一一映射，方便直接操作
         {(void *)MEM_EXT_START, (void *)MEM_EXT_END,     (void *)MEM_EXT_START, PTE_W},
+        {(void *)CONSOLE_DISP_ADDR, (void *)(CONSOLE_DISP_END - 1), (void *)CONSOLE_VIDEO_BASE, PTE_W},
     };
 
     // 清空页目录表
