@@ -105,7 +105,7 @@ exception_handler alignment_check, 17, 1
 exception_handler machine_check, 18, 0
 exception_handler smd_exception, 19, 0
 exception_handler virtual_exception, 20, 0
-
+exception_handler kbd, 0x21, 0
 
 
 // 硬件中断

@@ -52,7 +52,7 @@
 #define PIC_OCW2_EOI		(1 << 5)		// 1 - 非特殊结束中断EOI命令
 
 #define IRQ_PIC_START		0x20			// PIC中断起始号
-
+#define IRQ1_KEYBOARD		0x21				// 按键中断
 
 
 
@@ -102,6 +102,7 @@ void exception_handler_smd_exception (void);
 void exception_handler_virtual_exception (void);
 
 
+int irq_install(int irq_num, irq_handler_t handler);
 void irq_enable(int irq_num);
 void irq_disable(int irq_num);
 void irq_disable_global(void);

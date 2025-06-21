@@ -14,6 +14,7 @@
 #include "ipc/sem.h"
 #include "core/memory.h"
 #include "dev/console.h"
+#include "dev/kbd.h"
 static boot_info_t * init_boot_info;        // 启动信息
 /**
  * 内核入口
@@ -28,8 +29,10 @@ void kernel_init (boot_info_t * boot_info) {
     log_init();
     time_init();
     console_init();
-    
+
     task_manager_init();
+    // 注意，放在irq_init之后
+    kbd_init();
 }
 
 
