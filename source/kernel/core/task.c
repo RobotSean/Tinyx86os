@@ -109,6 +109,9 @@ int task_init (task_t *task, const char * name, int flag, uint32_t entry, uint32
     list_node_init(&task->all_node);
     list_node_init(&task->run_node);
     list_node_init(&task->wait_node);
+    
+    // 文件相关
+    kernel_memset(task->file_table, 0, sizeof(task->file_table));
 
     // 插入就绪队列中和所有的任务队列中
     irq_state_t state = irq_enter_protection();
@@ -303,6 +306,46 @@ static task_t * task_next_run (void) {
  */
 task_t * task_current (void) {
     return task_manager.curr_task;
+}
+
+
+
+/**
+ * @brief 获取当前进程指定的文件描述符
+ */
+file_t * task_file (int fd) {
+    if ((fd >= 0) && (fd < TASK_OFILE_NR)) {
+        file_t * file = task_current()->file_table[fd];
+        return file;
+    }
+
+    return (file_t *)0;
+}
+
+    /**
+     * @brief 为指定的file分配一个新的文件id
+     */
+    int task_alloc_fd (file_t * file) {
+        task_t * task = task_current();
+
+        for (int i = 0; i < TASK_OFILE_NR; i++) {
+            file_t * p = task->file_table[i];
+            if (p == (file_t *)0) {
+                task->file_table[i] = file;
+                return i;
+            }
+        }
+
+        return -1;
+    }
+
+/**
+ * @brief 移除任务中打开的文件fd
+ */
+void task_remove_fd (int fd) {
+    if ((fd >= 0) && (fd < TASK_OFILE_NR)) {
+        task_current()->file_table[fd] = (file_t *)0;
+    }
 }
 
 

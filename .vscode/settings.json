@@ -31,6 +31,9 @@
         "fs.h": "c",
         "stat.h": "c",
         "console.h": "c",
-        "tty.h": "c"
+        "tty.h": "c",
+        "file.h": "c",
+        "kbd.h": "c",
+        "sem.h": "c"
     },
 }

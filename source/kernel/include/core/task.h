@@ -4,11 +4,11 @@
 #include "comm/types.h"
 #include "cpu/cpu.h"
 #include "tools/list.h"
-
+#include "fs/file.h"
 #define TASK_NAME_SIZE				32			// 任务名字长度
 #define TASK_TIME_SLICE_DEFAULT		10			// 时间片计数
 #define TASK_FLAG_SYSTEM       	(1 << 0)		// 系统任务
-
+#define TASK_OFILE_NR				128			// 最多支持打开的文件数量
 
 
 typedef struct _task_args_t {
@@ -41,6 +41,7 @@ typedef struct _task_t {
 	int time_slice;			// 时间片
 	int slice_ticks;		// 递减时间片计数
 
+	file_t * file_table[TASK_OFILE_NR];	
 
 	uint32_t * stack;
 	tss_t tss;				// 任务的TSS段
@@ -87,4 +88,8 @@ void sys_msleep (uint32_t ms);
 int sys_getpid (void);
 int sys_fork (void);
 int sys_execve(char *name, char **argv, char **env);
+
+file_t * task_file (int fd);
+int task_alloc_fd (file_t * file);
+void task_remove_fd (int fd);
 #endif

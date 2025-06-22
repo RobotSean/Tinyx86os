@@ -22,7 +22,7 @@ int first_task_main (void) {
 
     pid = getpid();
     for (;;) {
-        print_msg("task id = %d", pid);
+        //print_msg("task id = %d", pid);
         msleep(1000);
     }
 
