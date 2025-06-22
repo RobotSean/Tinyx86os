@@ -29,6 +29,8 @@
         "bitmap.h": "c",
         "syscall.h": "c",
         "fs.h": "c",
-        "stat.h": "c"
+        "stat.h": "c",
+        "console.h": "c",
+        "tty.h": "c"
     },
 }

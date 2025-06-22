@@ -28,8 +28,7 @@ void kernel_init (boot_info_t * boot_info) {
 
     log_init();
     time_init();
-    console_init();
-
+   
     task_manager_init();
     // 注意，放在irq_init之后
     kbd_init();
