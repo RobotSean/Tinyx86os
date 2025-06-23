@@ -11,7 +11,7 @@
 #include "fs/file.h"
 #include "tools/log.h"
 #include "dev/dev.h"
-
+#include <sys/file.h>
 
 
 #define FS_TABLE_SIZE		10		// 文件系统表数量
@@ -61,6 +61,16 @@ static void read_disk(int sector, int sector_count, uint8_t * buf) {
 
 
 
+/**
+ * @brief 判断文件描述符是否正确
+ */
+static int is_fd_bad (int file) {
+	if ((file < 0) && (file >= TASK_OFILE_NR)) {
+		return 1;
+	}
+
+	return 0;
+}
 
 
 /**
@@ -154,6 +164,25 @@ void fs_init (void) {
 	ASSERT(fs != (fs_t *)0);
 }
 
+
+
+
+/**
+ * @brief 转换目录为数字
+ */
+int path_to_num (const char * path, int * num) {
+	int n = 0;
+
+	const char * c = path;
+	while (*c && *c != '/') {
+		n = n * 10 + *c - '0';
+		c++;
+	}
+	*num = n;
+	return 0;
+}
+
+
 /**
  * @brief 检查路径是否正常
  */
@@ -167,60 +196,106 @@ static int is_path_valid (const char * path) {
 
 
 /**
+ * @brief 判断路径是否以xx开头
+ */
+int path_begin_with (const char * path, const char * str) {
+	const char * s1 = path, * s2 = str;
+	while (*s1 && *s2 && (*s1 == *s2)) {
+		s1++;
+		s2++;
+	}
+
+	return *s2 == '\0';
+}
+
+/**
+ * @brief 获取下一级子目录
+ */
+const char * path_next_child (const char * path) {
+   const char * c = path;
+
+    while (*c && (*c++ == '/')) {}
+    while (*c && (*c++ != '/')) {}
+    return *c ? c : (const char *)0;
+}
+
+static void fs_protect (fs_t * fs) {
+	if (fs->mutex) {
+		mutex_lock(fs->mutex);
+	}
+}
+
+static void fs_unprotect (fs_t * fs) {
+	if (fs->mutex) {
+		mutex_unlock(fs->mutex);
+	}
+}
+
+
+/**
  * 打开文件
  */
 int sys_open(const char *name, int flags, ...) {
-	if (kernel_strncmp(name, "tty", 3) == 0) {
-        if (!is_path_valid(name)) {
-            log_printf("path is not valid.");
-            return -1;
-        }
+	// 临时使用，保留shell加载的功能
+	if (kernel_strncmp(name, "/shell.elf", 4) == 0) {
+        // 暂时直接从扇区1000上读取, 读取大概40KB，足够了
+        read_disk(5000, 80, (uint8_t *)TEMP_ADDR);
+        temp_pos = (uint8_t *)TEMP_ADDR;
+        return TEMP_FILE_ID;
+    }
 
-        // 分配文件描述符链接。这个过程中可能会被释放
-        int fd = -1;
-        file_t * file = file_alloc();
-        if (file) {
-            fd = task_alloc_fd(file);
-            if (fd < 0) {
-                goto sys_open_failed;
-            }
-        }
+	// 分配文件描述符链接
+	file_t * file = file_alloc();
+	if (!file) {
+		return -1;
+	}
 
-		if (kernel_strlen(name) < 5) {
-			goto sys_open_failed;
+	int fd = task_alloc_fd(file);
+	if (fd < 0) {
+		goto sys_open_failed;
+	}
+
+	// 检查名称是否以挂载点开头，如果没有，则认为name在根目录下
+	// 即只允许根目录下的遍历
+	fs_t * fs = (fs_t *)0;
+	list_node_t * node = list_first(&mounted_list);
+	while (node) {
+		fs_t * curr = list_node_parent(node, fs_t, node);
+		if (path_begin_with(name, curr->mount_point)) {
+			fs = curr;
+			break;
 		}
+		node = list_node_next(node);
+	}
 
-		int num = name[4] - '0';
-		int dev_id = dev_open(DEV_TTY, num, 0);
-		if (dev_id < 0) {
-			goto sys_open_failed;
-		}
+	if (fs) {
+		name = path_next_child(name);
+	} else {
+		//fs = root_fs;
+	}
 
-		file->dev_id = dev_id;
-		file->mode = 0;
-		file->pos = 0;
-		file->ref = 1;
-		file->type = FILE_TTY;
-		kernel_strncpy(file->file_name, name, FILE_NAME_SIZE);
-		return fd;
+	file->mode = flags;
+	file->fs = fs;
+	kernel_strncpy(file->file_name, name, FILE_NAME_SIZE);
+
+	fs_protect(fs);
+	int err = fs->op->open(fs, name, file);
+	if (err < 0) {
+		fs_unprotect(fs);
+
+		log_printf("open %s failed.", name);
+		return -1;
+	}
+	fs_unprotect(fs);
+
+	return fd;
 
 sys_open_failed:
-		if (file) {
-			file_free(file);
-		}
-
-		if (fd >= 0) {
-			task_remove_fd(fd);
-		}
-		return -1;
-	} else {
-		if (name[0] == '/') {
-            // 暂时直接从扇区1000上读取, 读取大概40KB，足够了
-            read_disk(5000, 80, (uint8_t *)TEMP_ADDR);
-            temp_pos = (uint8_t *)TEMP_ADDR;
-            return TEMP_FILE_ID;
-        }
+	file_free(file);
+	if (fd >= 0) {
+		task_remove_fd(fd);
 	}
+	return -1;
 }
 
 
@@ -229,7 +304,7 @@ sys_open_failed:
  */
 int sys_dup (int file) {
 	// 超出进程所能打开的全部，退出
-	if ((file < 0) && (file >= TASK_OFILE_NR)) {
+	if (is_fd_bad(file)) {
         log_printf("file(%d) is not valid.", file);
 		return -1;
 	}
@@ -242,7 +317,7 @@ int sys_dup (int file) {
 
 	int fd = task_alloc_fd(p_file);	// 新fd指向同一描述符
 	if (fd >= 0) {
-		p_file->ref++;		// 增加引用
+		file_inc_ref(p_file);
 		return fd;
 	}
 
@@ -259,18 +334,30 @@ int sys_read(int file, char *ptr, int len) {
         kernel_memcpy(ptr, temp_pos, len);
         temp_pos += len;
         return len;
-    }else {
-		file_t * p_file = task_file(file);
-		if (!p_file) {
-			log_printf("file not opened");
-			return -1;
-		}
+    }
 
-		return dev_read(p_file->dev_id, 0, ptr, len);
+    if (is_fd_bad(file) || !ptr || !len) {
+		return 0;
 	}
-    return -1;
-}
 
+	file_t * p_file = task_file(file);
+	if (!p_file) {
+		log_printf("file not opened");
+		return -1;
+	}
+
+	if (p_file->mode == O_WRONLY) {
+		log_printf("file is write only");
+		return -1;
+	}
+
+	// 读取文件
+	fs_t * fs = p_file->fs;
+	fs_protect(fs);
+	int err = fs->op->read(ptr, len, p_file);
+	fs_unprotect(fs);
+	return err;
+}
 
 #include "tools/log.h"
 /**
@@ -295,13 +382,58 @@ int sys_lseek(int file, int ptr, int dir) {
         temp_pos = (uint8_t *)(ptr + TEMP_ADDR);
         return 0;
     }
-    return -1;
+
+	if (is_fd_bad(file)) {
+		return -1;
+	}
+
+	file_t * p_file = task_file(file);
+	if (!p_file) {
+		log_printf("file not opened");
+		return -1;
+	}
+
+	// 写入文件
+	fs_t * fs = p_file->fs;
+
+	fs_protect(fs);
+	int err = fs->op->seek(p_file, ptr, dir);
+	fs_unprotect(fs);
+	return err;
 }
 
 /**
  * 关闭文件
  */
 int sys_close(int file) {
+    if (file == TEMP_FILE_ID) {
+		return 0;
+	}
+
+	if (is_fd_bad(file)) {
+		log_printf("file error");
+		return -1;
+	}
+
+	file_t * p_file = task_file(file);
+	if (p_file == (file_t *)0) {
+		log_printf("file not opened. %d", file);
+		return -1;
+	}
+
+	ASSERT(p_file->ref > 0);
+
+	if (p_file->ref-- == 1) {
+		fs_t * fs = p_file->fs;
+
+		fs_protect(fs);
+		fs->op->close(p_file);
+		fs_unprotect(fs);
+	    file_free(p_file);
+	}
+
+	task_remove_fd(file);
+	return 0;
 }
 
 
@@ -309,14 +441,39 @@ int sys_close(int file) {
  * 判断文件描述符与tty关联
  */
 int sys_isatty(int file) {
-	return -1;
+	if (is_fd_bad(file)) {
+		return 0;
+	}
+
+	file_t * pfile = task_file(file);
+	if (pfile == (file_t *)0) {
+		return 0;
+	}
+
+	return pfile->type == FILE_TTY;
 }
+
+
 
 /**
  * @brief 获取文件状态
  */
 int sys_fstat(int file, struct stat *st) {
+	if (is_fd_bad(file)) {
+		return -1;
+	}
+
+	file_t * p_file = task_file(file);
+	if (p_file == (file_t *)0) {
+		return -1;
+	}
+
+	fs_t * fs = p_file->fs;
+
     kernel_memset(st, 0, sizeof(struct stat));
-    st->st_size = 0;
-    return 0;
+
+	fs_protect(fs);
+	int err = fs->op->stat(p_file, st);
+	fs_unprotect(fs);
+	return err;
 }

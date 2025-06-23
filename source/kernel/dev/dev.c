@@ -40,6 +40,7 @@ int dev_open (int major, int minor, void * data) {
         if (dev->open_count == 0) {
             // 纪录空闲值
             free_dev = dev;
+            break;
         } else if ((dev->desc->major == major) && (dev->minor == minor)) {
             // 找到了已经打开的？直接返回就好
             dev->open_count++;
