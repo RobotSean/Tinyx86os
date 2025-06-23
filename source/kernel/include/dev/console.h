@@ -55,14 +55,14 @@ typedef union {
  * 终端显示部件
  */
 typedef struct _console_t {
-	disp_char_t * disp_base;	// 显示基地址
-
+	
+    disp_char_t * disp_base;	// 显示基地址
     enum {
         CONSOLE_WRITE_NORMAL,			// 普通模式
         CONSOLE_WRITE_ESC,				// ESC转义序列
         CONSOLE_WRITE_SQUARE,           // ESC [接收状态
     }write_state;
-
+    
     int cursor_row, cursor_col;		// 当前编辑的行和列
     int display_rows, display_cols;	// 显示界面的行数和列数
     int old_cursor_col, old_cursor_row;	// 保存的光标位置
@@ -75,5 +75,5 @@ typedef struct _console_t {
 int console_init (int idx);
 int console_write (tty_t * tty);
 void console_close (int dev);
-
+void console_select(int idx);
 #endif /* SRC_UI_TTY_WIDGET_H_ */

@@ -118,6 +118,14 @@ uint8_t kbd_read(void) {
     return inb(KBD_PORT_DATA);
 }
 
+static void do_fx_key (int key) {
+    int index = key - KEY_F1;
+    if (kbd_state.lctrl_press || kbd_state.rctrl_press) {
+        tty_select(index);
+    }
+}
+
+
 /**
  * 更新键盘上状态指示灯
  */
@@ -167,6 +175,8 @@ static void do_normal_key (uint8_t raw_code) {
     case KEY_F6:
     case KEY_F7:
     case KEY_F8:
+        do_fx_key(key);
+        break;
     case KEY_F9:
     case KEY_F10:
     case KEY_F11:
@@ -194,7 +204,7 @@ static void do_normal_key (uint8_t raw_code) {
 
             // 最后，不管是否是控制字符，都会被写入
             // log_printf("key=%c", key);
-            tty_in(0, key);
+            tty_in(key);
         }
         break;
     }
