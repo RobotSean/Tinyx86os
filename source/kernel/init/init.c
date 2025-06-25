@@ -26,11 +26,10 @@ void kernel_init (boot_info_t * boot_info) {
     cpu_init();
     // 内存初始化要放前面一点，因为后面的代码可能需要内存分配
     memory_init(boot_info);
-    fs_init();
-
     log_init();
+    fs_init();
     time_init();
-   
+
     task_manager_init();
 
 }

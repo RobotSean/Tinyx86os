@@ -28,6 +28,8 @@
 #define IRQ20_VE            20
 
 #define IRQ0_TIMER          0x20
+#define IRQ1_KEYBOARD		0x21				// 按键中断
+#define IRQ14_HARDDISK_PRIMARY		0x2E		// 主总线上的ATA磁盘中断
 
 
 // PIC控制器相关的寄存器及位配置
@@ -50,9 +52,7 @@
 #define PIC_ICW4_8086	    (1 << 0)        // 8086工作模式
 
 #define PIC_OCW2_EOI		(1 << 5)		// 1 - 非特殊结束中断EOI命令
-
 #define IRQ_PIC_START		0x20			// PIC中断起始号
-#define IRQ1_KEYBOARD		0x21				// 按键中断
 
 
 

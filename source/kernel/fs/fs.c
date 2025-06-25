@@ -12,7 +12,7 @@
 #include "tools/log.h"
 #include "dev/dev.h"
 #include <sys/file.h>
-
+#include "dev/disk.h"
 
 #define FS_TABLE_SIZE		10		// 文件系统表数量
 
@@ -27,38 +27,6 @@ extern fs_op_t devfs_op;
 #define TEMP_ADDR        	(8*1024*1024)      // 在0x800000处缓存原始
 
 static uint8_t * temp_pos;       // 当前位置
-
-/**
-* 使用LBA48位模式读取磁盘
-*/
-static void read_disk(int sector, int sector_count, uint8_t * buf) {
-    outb(0x1F6, (uint8_t) (0xE0));
-
-	outb(0x1F2, (uint8_t) (sector_count >> 8));
-    outb(0x1F3, (uint8_t) (sector >> 24));		// LBA参数的24~31位
-    outb(0x1F4, (uint8_t) (0));					// LBA参数的32~39位
-    outb(0x1F5, (uint8_t) (0));					// LBA参数的40~47位
-
-    outb(0x1F2, (uint8_t) (sector_count));
-	outb(0x1F3, (uint8_t) (sector));			// LBA参数的0~7位
-	outb(0x1F4, (uint8_t) (sector >> 8));		// LBA参数的8~15位
-	outb(0x1F5, (uint8_t) (sector >> 16));		// LBA参数的16~23位
-
-	outb(0x1F7, (uint8_t) 0x24);
-
-	// 读取数据
-	uint16_t *data_buf = (uint16_t*) buf;
-	while (sector_count-- > 0) {
-		// 每次扇区读之前都要检查，等待数据就绪
-		while ((inb(0x1F7) & 0x88) != 0x8) {}
-
-		// 读取并将数据写入到缓存中
-		for (int i = 0; i < SECTOR_SIZE / 2; i++) {
-			*data_buf++ = inw(0x1F0);
-		}
-	}
-}
-
 
 
 /**
@@ -159,6 +127,8 @@ void fs_init (void) {
 	mount_list_init();
     file_table_init();
 
+	// 磁盘检查
+	disk_init();
 	// 挂载设备文件系统，待后续完成。挂载点名称可随意
 	fs_t * fs = mount(FS_DEVFS, "/dev", 0, 0);
 	ASSERT(fs != (fs_t *)0);
@@ -239,7 +209,9 @@ int sys_open(const char *name, int flags, ...) {
 	// 临时使用，保留shell加载的功能
 	if (kernel_strncmp(name, "/shell.elf", 4) == 0) {
         // 暂时直接从扇区1000上读取, 读取大概40KB，足够了
-        read_disk(5000, 80, (uint8_t *)TEMP_ADDR);
+		int dev_id = dev_open(DEV_DISK, 0xa0, (void *)0);
+		dev_read(dev_id, 5000, (uint8_t *)TEMP_ADDR, 80);
+        //read_disk(5000, 80, (uint8_t *)TEMP_ADDR);
         temp_pos = (uint8_t *)TEMP_ADDR;
         return TEMP_FILE_ID;
     }
