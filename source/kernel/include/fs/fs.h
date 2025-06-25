@@ -8,6 +8,7 @@
 #include "file.h"
 #include "tools/list.h"
 #include "ipc/mutex.h"
+#include "fatfs/fatfs.h"
 
 struct _fs_t;
 
@@ -29,6 +30,7 @@ typedef struct _fs_op_t {
 
 // 文件系统类型
 typedef enum _fs_type_t {
+    FS_FAT16,
     FS_DEVFS,
 }fs_type_t;
 
@@ -41,6 +43,12 @@ typedef struct _fs_t {
     int dev_id;                 // 所属的设备
 
     list_node_t node;           // 下一结点
+
+    // 目前暂时这样设计，可能看起来不好，但是是最简单的方法
+    // 这样就不用考虑内存分配的问题
+    union {
+        fat_t fat_data;         // 文件系统相关数据
+    };
     mutex_t * mutex;              // 文件系统操作互斥信号量
 }fs_t;
 void fs_init (void);

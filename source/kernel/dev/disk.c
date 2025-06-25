@@ -219,20 +219,20 @@ int disk_open (device_t * dev) {
         return -1;
     }
 
-    disk_t * disk = disk_buf + disk_idx;
+    disk_t * disk = disk_buf + disk_idx;//那块磁盘 主/从
     if (disk->sector_size == 0) {
         log_printf("disk not exist. device:sd%x", dev->minor);
         return -1;
     }
 
-    partinfo_t * part_info = disk->partinfo + part_idx;
+    partinfo_t * part_info = disk->partinfo + part_idx;//那快分区
     if (part_info->total_sector == 0) {
         log_printf("part not exist. device:sd%x", dev->minor);
         return -1;
     }
 
     // 磁盘存在，建立关联
-    dev->data = part_info;
+    dev->data = part_info;//指向磁盘分区
     irq_install(IRQ14_HARDDISK_PRIMARY, exception_handler_ide_primary);
     irq_enable(IRQ14_HARDDISK_PRIMARY);
     return 0;
@@ -263,7 +263,9 @@ int disk_read (device_t * dev, int start_sector, char * buf, int count) {
     //disk->sector_size 512字节
     for (cnt = 0; cnt < count; cnt++, buf += disk->sector_size) {
         // 利用信号量等待中断通知，然后再读取数据
-        sem_wait(disk->op_sem);
+        if (task_current()) {
+            sem_wait(disk->op_sem);
+        }
 
         // 这里虽然有调用等待，但是由于已经是操作完毕，所以并不会等
         int err = ata_wait_data(disk);
@@ -307,7 +309,9 @@ int disk_write (device_t * dev, int start_sector, char * buf, int count) {
         ata_write_data(disk, buf, disk->sector_size);
 
         // 利用信号量等待中断通知，等待写完成
-        sem_wait(disk->op_sem);
+        if (task_current()) {
+            sem_wait(disk->op_sem);
+        }
 
         // 这里虽然有调用等待，但是由于已经是操作完毕，所以并不会等
         int err = ata_wait_data(disk);
@@ -341,7 +345,7 @@ void disk_close (device_t * dev) {
  */
 void do_handler_ide_primary (exception_frame_t *frame)  {
     pic_send_eoi(IRQ14_HARDDISK_PRIMARY);
-    if (task_on_op) {
+    if (task_on_op && task_current()) {
         sem_notify(&op_sem);
     }
 }
