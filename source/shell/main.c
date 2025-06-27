@@ -203,7 +203,57 @@ static int do_ls (int argc, char ** argv) {
     return 0;
 }
 
+/**
+ * @brief 复制文件命令
+ */
+static int do_cp (int argc, char ** argv) {
+    if (argc < 3) {
+        puts("no [from] or no [to]");
+        return -1;
+    }
 
+    FILE * from, * to;
+    from = fopen(argv[1], "rb");
+    to = fopen(argv[2], "wb");
+    if (!from || !to) {
+        puts("open file failed.");
+        goto ls_failed;
+    }
+
+    char * buf = (char *)malloc(255);
+    int size = 0;
+    while ((size = fread(buf, 1, 255, from)) > 0) {
+        fwrite(buf, 1, size, to);
+    }
+    free(buf);
+
+ls_failed:
+    if (from) {
+        fclose(from);
+    }
+    if (to) {
+        fclose(to);
+    }
+    return 0;
+}
+
+/**
+ * @brief 删除文件命令
+ */
+static int do_remove (int argc, char ** argv) {
+    if (argc < 2) {
+        fprintf(stderr, "no file");
+        return -1;
+    }
+
+    int err = unlink(argv[1]);
+    if (err < 0) {
+        fprintf(stderr, "rm file failed: %s", argv[1]);
+        return err;
+    }
+
+    return 0;
+}
 
 
 // 命令列表
@@ -234,6 +284,16 @@ static const cli_cmd_t cmd_list[] = {
         .do_func = do_less,
     },
     {
+        .name = "cp",
+        .useage = "cp from to -- copy file",
+        .do_func = do_cp,
+    },
+    {
+       .name = "rm",
+        .useage = "rm file -- remove file",
+        .do_func = do_remove,
+    },
+    {
         .name = "quit",
         .useage = "quit from shell",
         .do_func = do_exit,
@@ -251,6 +311,26 @@ static void cli_init(const char * promot, const cli_cmd_t * cmd_list, int cnt) {
     cli.cmd_start = cmd_list;
     cli.cmd_end = cmd_list + cnt;
 }
+
+/**
+ * 遍历搜索目录，看看文件是否存在，存在返回文件所在路径
+ */
+static const char * find_exec_path (const char * file_name) {
+    static char path[255];
+
+    int fd = open(file_name, 0);
+    if (fd < 0) {
+        sprintf(path, "%s.elf", file_name);
+        fd = open(path, 0);
+        if (fd < 0) {
+            return (const char * )0;
+        }
+    }
+
+    close(fd);
+    return path;
+}
+
 
 /**
  * 在内部命令中搜索
@@ -286,19 +366,12 @@ static void run_exec_file (const char * path, int argc, char ** argv) {
     if (pid < 0) {
         fprintf(stderr, "fork failed: %s", path);
     } else if (pid == 0) {
-        // 以下供测试exit使用
-        for (int i = 0; i < argc; i++) {
-            msleep(1000);
-            printf("arg %d = %s\n", i, argv[i]);
+        // 子进程
+        int err = execve(path, argv, (char * const *)0);
+        if (err < 0) {
+            fprintf(stderr, "exec failed: %s", path);
         }
         exit(-1);
-
-        // 子进程
-        // int err = execve(path, argv, (char * const *)0);
-        // if (err < 0) {
-        //     fprintf(stderr, "exec failed: %s", path);
-        // }
-        // exit(-1);
     } else {
 		// 等待子进程执行完毕
         int status;
@@ -362,15 +435,13 @@ int main (int argc, char **argv) {
             continue;
         }
 
-        // 测试程序，运行虚拟的程序
-        run_exec_file("", argc, argv);
 
-        // 试图作为外部命令执行。只检查文件是否存在，不考虑是否可执行
-        // const char * path = find_exec_path(argv[0]);
-        // if (path) {
-        //     run_exec_file(path, argc, argv);
-        //     continue;
-        // }
+        //试图作为外部命令执行。只检查文件是否存在，不考虑是否可执行
+        const char * path = find_exec_path(argv[0]);
+        if (path) {
+            run_exec_file(path, argc, argv);
+            continue;
+        }
 
         // 找不到命令，提示错误
         fprintf(stderr, ESC_COLOR_ERROR"Unknown command: %s\n"ESC_COLOR_DEFAULT, cli.curr_input);

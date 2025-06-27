@@ -348,17 +348,35 @@ int sys_read(int file, char *ptr, int len) {
 }
 
 #include "tools/log.h"
+
+
+
+
 /**
  * 写文件
  */
 int sys_write(int file, char *ptr, int len) {
+	if (is_fd_bad(file) || !ptr || !len) {
+		return 0;
+	}
+
 	file_t * p_file = task_file(file);
 	if (!p_file) {
 		log_printf("file not opened");
 		return -1;
 	}
 
-	return dev_write(p_file->dev_id, 0, ptr, len);
+	if (p_file->mode == O_RDONLY) {
+		log_printf("file is write only");
+		return -1;
+	}
+
+	// 写入文件
+	fs_t * fs = p_file->fs;
+	fs_protect(fs);
+	int err = fs->op->write(ptr, len, p_file);
+	fs_unprotect(fs);
+	return err;
 }
 
 
@@ -484,3 +502,9 @@ int sys_closedir(DIR *dir) {
 }
 
 
+int sys_unlink (const char * path) {
+	fs_protect(root_fs);
+	int err = root_fs->op->unlink(root_fs, path);
+	fs_unprotect(root_fs);
+	return err;
+}

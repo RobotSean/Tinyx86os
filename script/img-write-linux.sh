@@ -34,10 +34,14 @@ dd if=kernel.elf of=$DISK1_NAME bs=512 conv=notrunc seek=100
 #写应用程序，使用系统的挂载命令
 export DISK2_NAME=disk2.img
 export TARGET_PATH=mp
-rm -rf $TARGET_PATH
+#设置挂载点目录为 mp
+#强制删除挂载点目录（如果已经存在），避免残留数据或挂载失败。
+sudo rm -rf $TARGET_PATH
 mkdir $TARGET_PATH
+#将 disk2.img 中偏移 128 个扇区（每个扇区 512 字节，即从第 65536 字节起）的文件系统挂载到 mp 目录
 sudo mount -o offset=$[128*512],rw $DISK2_NAME $TARGET_PATH
-sudo cp -v init.elf $TARGET_PATH/init
-sudo cp -v shell.elf $TARGET_PATH
-sudo cp -v loop.elf $TARGET_PATH/loop
-# sudo umount $TARGET_PATH
+# sudo cp -v init.elf $TARGET_PATH/init
+# sudo cp -v shell.elf $TARGET_PATH
+# sudo cp -v loop.elf $TARGET_PATH/loop
+sudo cp -v *.elf $TARGET_PATH
+sudo umount $TARGET_PATH

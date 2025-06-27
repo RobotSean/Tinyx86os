@@ -57,5 +57,5 @@ typedef struct _DIR {
 DIR * opendir(const char * name);
 struct dirent* readdir(DIR* dir);
 int closedir(DIR *dir);
-
+int unlink(const char *pathname);
 #endif //LIB_SYSCALL_H

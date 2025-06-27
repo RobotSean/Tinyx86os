@@ -10,6 +10,7 @@
 
 
 #define FAT_CLUSTER_INVALID 		0xFFF8      	// 无效的簇号
+#define FAT_CLUSTER_FREE          	0x00     	    // 空闲或无效的簇号
 
 #define DIRITEM_NAME_FREE               0xE5                // 目录项空闲名标记
 #define DIRITEM_NAME_END                0x00                // 目录项结束名标记
@@ -91,6 +92,7 @@ typedef struct _fat_t {
     int curr_sector;                        // 当前缓存的扇区数
 
     struct _fs_t * fs;                      // 所在的文件系统
+    mutex_t mutex;                          // 互斥信号量
 } fat_t;
 
 

@@ -66,9 +66,10 @@ void init_main(void) {
     //irq_enable_global(); //测试定时中断
 
     //测试日志
+    log_printf("==============================");
     log_printf("Kernel is running....");
     log_printf("Version: %s, name: %s", OS_VERSION, "tiny x86 os");
-    log_printf("%d %d %x %c", -123, 123456, 0x12345, 'a');
+    log_printf("==============================");
 
     
     task_first_init();
