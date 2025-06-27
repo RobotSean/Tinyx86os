@@ -638,6 +638,8 @@ static int load_phdr(int file, Elf32_Phdr * phdr, uint32_t page_dir) {
     return 0;
 }
 
+
+
 /**
  * @brief 加载elf文件到内存中
  */
@@ -732,7 +734,7 @@ static int copy_args (char * to, uint32_t page_dir, int argc, char **argv) {
 
     // 复制各项参数, 跳过task_args和参数表
     // 各argv参数写入的内存空间
-    char * dest_arg = to + sizeof(task_args_t) + sizeof(char *) * (argc);   // 留出结束符
+    char * dest_arg = to + sizeof(task_args_t) + sizeof(char *) * (argc + 1);   // 留出结束符
 
     //新表的虚拟地址dest_arg
     char ** dest_argv_tb = (char **)memory_get_paddr(page_dir, (uint32_t)(to + sizeof(task_args_t)));
@@ -752,6 +754,13 @@ static int copy_args (char * to, uint32_t page_dir, int argc, char **argv) {
         // 记录下位置后，复制的位置前移
         dest_arg += len;
     }
+
+    // 可能存在无参的情况，此时不需要写入
+    if (argc) {
+        dest_argv_tb[argc] = '\0';
+    }
+
+
      // 写入task_args
     return memory_copy_uvm_data((uint32_t)to, page_dir, (uint32_t)&task_args, sizeof(task_args_t));
 }
