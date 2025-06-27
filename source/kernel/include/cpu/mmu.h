@@ -89,7 +89,7 @@ static inline uint32_t pte_paddr (pte_t * pte) {
  * @brief 获取pte中的权限位
  */
 static inline uint32_t get_pte_perm (pte_t * pte) {
-    return (pte->v & 0x1FF);                   // 2023年2月19 同学发现有问题，改了下
+    return (pte->v & 0x1FF);              
 }
 
 

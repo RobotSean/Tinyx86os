@@ -308,6 +308,29 @@ int sys_dup (int file) {
 
 
 /**
+ * @brief IO设备控制
+ */
+int sys_ioctl(int fd, int cmd, int arg0, int arg1) {
+	if (is_fd_bad(fd)) {
+		return 0;
+	}
+
+	file_t * pfile = task_file(fd);
+	if (pfile == (file_t *)0) {
+		return 0;
+	}
+
+	fs_t * fs = pfile->fs;
+
+	fs_protect(fs);
+	int err = fs->op->ioctl(pfile, cmd, arg0, arg1);
+	fs_unprotect(fs);
+	return err;
+}
+
+
+
+/**
  * 读取文件api
  */
 int sys_read(int file, char *ptr, int len) {
@@ -458,3 +481,28 @@ int sys_fstat(int file, struct stat *st) {
 	fs_unprotect(fs);
 	return err;
 }
+
+
+
+int sys_opendir(const char * name, DIR * dir) {
+	fs_protect(root_fs);
+	int err = root_fs->op->opendir(root_fs, name, dir);
+	fs_unprotect(root_fs);
+	return err;
+}
+
+int sys_readdir(DIR* dir, struct dirent * dirent) {
+	fs_protect(root_fs);
+	int err = root_fs->op->readdir(root_fs, dir, dirent);
+	fs_unprotect(root_fs);
+	return err;
+}
+
+int sys_closedir(DIR *dir) {
+	fs_protect(root_fs);
+	int err = root_fs->op->closedir(root_fs, dir);
+	fs_unprotect(root_fs);
+	return err;
+}
+
+

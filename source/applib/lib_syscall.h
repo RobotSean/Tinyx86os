@@ -7,6 +7,9 @@
 #include "core/syscall.h"
 #include "os_cfg.h"
 #include <sys/stat.h>
+#include "fs/file.h"
+#include "dev/tty.h"
+
 typedef struct _syscall_args_t {
     int id;
     int arg0;
@@ -35,5 +38,24 @@ int dup (int file);
 
 int wait(int* status);
 void _exit(int status);
+
+
+int ioctl(int fd, int cmd, int arg0, int arg1);
+
+struct dirent {
+   int index;           // 在目录中的偏移
+   int type;            // 文件或目录的类型
+   char name [255];     // 目录或目录的名称
+   int size;            // 文件大小
+};
+
+typedef struct _DIR {
+    int index;          // 当前遍历的索引
+    struct dirent dirent;
+}DIR;
+
+DIR * opendir(const char * name);
+struct dirent* readdir(DIR* dir);
+int closedir(DIR *dir);
 
 #endif //LIB_SYSCALL_H

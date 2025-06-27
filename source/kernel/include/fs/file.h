@@ -15,6 +15,8 @@
 typedef enum _file_type_t {
     FILE_UNKNOWN = 0,
     FILE_TTY = 1,
+    FILE_NORMAL,
+    FILE_DIR,
 } file_type_t;
 
 
@@ -31,6 +33,11 @@ typedef struct _file_t {
     int dev_id;                 // 文件所属的设备号 
 
     int pos;                   	// 当前位置
+
+    int sblk;                   // 内部起始块
+    int cblk;                   // 当前
+    int p_index;                // 在父目录中的索引
+
     int mode;					// 读写模式
     struct _fs_t * fs;          // 所在的文件系统
 } file_t;
